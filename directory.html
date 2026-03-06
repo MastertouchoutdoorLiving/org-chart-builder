@@ -8,6 +8,46 @@
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
+        :root[data-theme="dark"] {
+            --bg-primary: #0C2637;
+            --bg-secondary: #133A4F;
+            --bg-tertiary: #0F2F42;
+            --border-color: #1A4D65;
+            --border-color-hover: #1E5068;
+            --text-primary: #E0EDEE;
+            --text-heading: #FFFFFF;
+            --text-muted: #8AACB8;
+            --text-subtle: #5A8090;
+            --accent-orange: #F47920;
+            --accent-orange-hover: #E85D10;
+            --accent-orange-dark: #D44D04;
+            --accent-teal: #00BCC8;
+            --accent-teal-light: #2AAA8A;
+            --header-gradient-start: #133A4F;
+            --header-gradient-end: #0C2637;
+            --overlay-bg: rgba(12, 38, 55, 0.8);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #EFF3F5;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #F8FAFB;
+            --border-color: #D0DBE0;
+            --border-color-hover: #B8C5CC;
+            --text-primary: #2A3F4D;
+            --text-heading: #132B3A;
+            --text-muted: #5A7585;
+            --text-subtle: #7A8B95;
+            --accent-orange: #E06A10;
+            --accent-orange-hover: #C85810;
+            --accent-orange-dark: #B04A08;
+            --accent-teal: #00919B;
+            --accent-teal-light: #0A7A85;
+            --header-gradient-start: #FFFFFF;
+            --header-gradient-end: #F5F7F8;
+            --overlay-bg: rgba(239, 243, 245, 0.9);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -21,9 +61,10 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #0C2637;
-            color: #E0EDEE;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
             line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         /* Layout */
@@ -35,8 +76,8 @@
 
         /* Header */
         .directory-header {
-            background: linear-gradient(135deg, #133A4F 0%, #0C2637 100%);
-            border-bottom: 2px solid #F47920;
+            background: linear-gradient(135deg, var(--header-gradient-start) 0%, var(--header-gradient-end) 100%);
+            border-bottom: 2px solid var(--accent-orange);
             padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -76,8 +117,28 @@
             flex-wrap: wrap;
         }
 
+        .theme-toggle {
+            width: 44px;
+            height: 44px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-color-hover);
+        }
+
         .back-link {
-            color: #00BCC8;
+            color: var(--accent-teal);
             text-decoration: none;
             font-size: 14px;
             padding: 0.5rem 1rem;
@@ -105,15 +166,15 @@
         }
 
         .stat-card {
-            background-color: #133A4F;
-            border: 1px solid #1A4D65;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1rem;
         }
 
         .stat-label {
             font-size: 12px;
-            color: #8AACB8;
+            color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 0.5rem;
@@ -122,12 +183,12 @@
         .stat-value {
             font-size: 24px;
             font-weight: 600;
-            color: #F47920;
+            color: var(--accent-orange);
         }
 
         .stat-breakdown {
             font-size: 11px;
-            color: #5A8090;
+            color: var(--text-subtle);
             margin-top: 0.5rem;
         }
 
@@ -148,29 +209,29 @@
         .search-box input {
             width: 100%;
             padding: 0.75rem 1rem;
-            background-color: #0F2F42;
-            border: 1px solid #1A4D65;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: #E0EDEE;
+            color: var(--text-primary);
             font-size: 14px;
             transition: border-color 0.2s;
         }
 
         .search-box input::placeholder {
-            color: #5A8090;
+            color: var(--text-subtle);
         }
 
         .search-box input:focus {
             outline: none;
-            border-color: #F47920;
+            border-color: var(--accent-orange);
         }
 
         select, button {
             padding: 0.75rem 1rem;
-            background-color: #0F2F42;
-            border: 1px solid #1A4D65;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: #E0EDEE;
+            color: var(--text-primary);
             font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
@@ -182,7 +243,7 @@
         }
 
         select:hover, select:focus {
-            border-color: #1E5068;
+            border-color: var(--border-color-hover);
             outline: none;
         }
 
@@ -192,43 +253,43 @@
         }
 
         button:hover {
-            background-color: #133A4F;
-            border-color: #1E5068;
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color-hover);
         }
 
         .btn-primary {
-            background-color: #F47920;
-            border-color: #F47920;
-            color: #0C2637;
+            background-color: var(--accent-orange);
+            border-color: var(--accent-orange);
+            color: var(--bg-primary);
             font-weight: 600;
         }
 
         .btn-primary:hover {
-            background-color: #E85D10;
-            border-color: #E85D10;
+            background-color: var(--accent-orange-hover);
+            border-color: var(--accent-orange-hover);
             box-shadow: 0 0 12px rgba(244, 121, 32, 0.3);
         }
 
         .btn-danger {
-            background-color: #E85D10;
-            border-color: #E85D10;
+            background-color: var(--accent-orange-hover);
+            border-color: var(--accent-orange-hover);
             color: white;
             font-weight: 600;
         }
 
         .btn-danger:hover {
-            background-color: #D44D04;
-            border-color: #D44D04;
+            background-color: var(--accent-orange-dark);
+            border-color: var(--accent-orange-dark);
         }
 
         .btn-secondary {
-            background-color: #1A4D65;
-            border-color: #1A4D65;
+            background-color: var(--border-color);
+            border-color: var(--border-color);
         }
 
         .btn-secondary:hover {
-            background-color: #1E5068;
-            border-color: #1E5068;
+            background-color: var(--border-color-hover);
+            border-color: var(--border-color-hover);
         }
 
         .btn-small {
@@ -244,8 +305,8 @@
         }
 
         .employee-card {
-            background-color: #133A4F;
-            border: 1px solid #1A4D65;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1.5rem;
             cursor: pointer;
@@ -255,7 +316,7 @@
         }
 
         .employee-card:hover {
-            border-color: #1E5068;
+            border-color: var(--border-color-hover);
             box-shadow: 0 10px 25px rgba(244, 121, 32, 0.15);
             transform: translateY(-2px);
         }
@@ -267,7 +328,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #F47920, #00BCC8);
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-teal));
             transition: height 0.3s;
         }
 
@@ -289,12 +350,12 @@
 
         .status-active {
             background-color: rgba(244, 121, 32, 0.2);
-            color: #F47920;
+            color: var(--accent-orange);
         }
 
         .status-inactive {
-            background-color: rgba(90, 128, 144, 0.2);
-            color: #5A8090;
+            background-color: rgba(122, 139, 149, 0.2);
+            color: var(--text-subtle);
         }
 
         .card-avatar {
@@ -318,19 +379,19 @@
 
         .card-title {
             font-size: 13px;
-            color: #8AACB8;
+            color: var(--text-muted);
             margin-bottom: 0.5rem;
         }
 
         .card-detail {
             font-size: 12px;
-            color: #5A8090;
+            color: var(--text-subtle);
             margin-bottom: 0.25rem;
             word-break: break-word;
         }
 
         .card-detail-label {
-            color: #1E5068;
+            color: var(--border-color-hover);
             font-weight: 500;
         }
 
@@ -341,7 +402,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(12, 38, 55, 0.8);
+            background-color: var(--overlay-bg);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -360,8 +421,8 @@
         }
 
         .modal-content {
-            background-color: #133A4F;
-            border: 1px solid #1A4D65;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 2rem;
             max-width: 600px;
@@ -397,7 +458,7 @@
         .modal-close {
             background: none;
             border: none;
-            color: #8AACB8;
+            color: var(--text-muted);
             font-size: 24px;
             cursor: pointer;
             padding: 0;
@@ -409,7 +470,7 @@
         }
 
         .modal-close:hover {
-            color: #E0EDEE;
+            color: var(--text-primary);
             background-color: rgba(26, 77, 101, 0.3);
             border-radius: 4px;
         }
@@ -422,7 +483,7 @@
             display: block;
             font-size: 13px;
             font-weight: 600;
-            color: #E0EDEE;
+            color: var(--text-primary);
             margin-bottom: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -431,10 +492,10 @@
         .form-input, .form-textarea, .form-select {
             width: 100%;
             padding: 0.75rem 1rem;
-            background-color: #0F2F42;
-            border: 1px solid #1A4D65;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: #E0EDEE;
+            color: var(--text-primary);
             font-size: 14px;
             font-family: inherit;
             transition: border-color 0.2s;
@@ -442,7 +503,7 @@
 
         .form-input:focus, .form-textarea:focus, .form-select:focus {
             outline: none;
-            border-color: #F47920;
+            border-color: var(--accent-orange);
         }
 
         .form-textarea {
@@ -483,10 +544,10 @@
 
         .read-only-value {
             padding: 0.75rem 1rem;
-            background-color: #0F2F42;
-            border: 1px solid #1A4D65;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
             border-radius: 6px;
-            color: #E0EDEE;
+            color: var(--text-primary);
             font-size: 14px;
         }
 
@@ -494,7 +555,7 @@
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
-            color: #5A8090;
+            color: var(--text-subtle);
         }
 
         .empty-state-icon {
@@ -510,8 +571,8 @@
 
         /* Confirmation Dialog */
         .confirmation-modal {
-            background-color: #133A4F;
-            border: 1px solid #1A4D65;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 2rem;
             max-width: 400px;
@@ -526,7 +587,7 @@
         }
 
         .confirmation-text {
-            color: #E0EDEE;
+            color: var(--text-primary);
             margin-bottom: 2rem;
             line-height: 1.6;
         }
@@ -691,11 +752,24 @@
             const [showModal, setShowModal] = useState(false);
             const [showConfirmation, setShowConfirmation] = useState(false);
             const [employeeToDelete, setEmployeeToDelete] = useState(null);
+            const [theme, setTheme] = useState(() => {
+                return localStorage.getItem('mt-theme') || 'dark';
+            });
 
             // Save to localStorage
             useEffect(() => {
                 localStorage.setItem('mt_employees', JSON.stringify(employees));
             }, [employees]);
+
+            // Apply theme
+            useEffect(() => {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('mt-theme', theme);
+            }, [theme]);
+
+            function toggleTheme() {
+                setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark');
+            }
 
             // Filtered and sorted employees
             const filteredEmployees = employees.filter(emp => {
@@ -820,15 +894,18 @@
                         <div className="header-left">
                             <div className="mt-logo">
                                 <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                                    <defs><linearGradient id="shield" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F47920"/><stop offset="100%" stop-color="#E85D10"/></linearGradient></defs>
-                                    <path d="M50 5 L90 25 L90 55 Q90 80 50 95 Q10 80 10 55 L10 25 Z" fill="url(#shield)" opacity=".15" stroke="#F47920" stroke-width="1.5"/>
-                                    <text x="50" y="62" text-anchor="middle" font-family="Georgia,serif" font-size="40" font-weight="bold" font-style="italic" fill="#F47920">M</text>
-                                    <text x="62" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="bold" font-style="italic" fill="#00BCC8">t</text>
+                                    <defs><linearGradient id="shield" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#F47920"/><stop offset="100%" stopColor="#E85D10"/></linearGradient></defs>
+                                    <path d="M50 5 L90 25 L90 55 Q90 80 50 95 Q10 80 10 55 L10 25 Z" fill="url(#shield)" opacity=".15" stroke="#F47920" strokeWidth="1.5"/>
+                                    <text x="50" y="62" textAnchor="middle" fontFamily="Georgia,serif" fontSize="40" fontWeight="bold" fontStyle="italic" fill="#F47920">M</text>
+                                    <text x="62" y="72" textAnchor="middle" fontFamily="Georgia,serif" fontSize="22" fontWeight="bold" fontStyle="italic" fill="#00BCC8">t</text>
                                 </svg>
                             </div>
                             <h1 className="header-title">Employee Directory</h1>
                         </div>
                         <div className="header-right">
+                            <button className="theme-toggle" onClick={toggleTheme} title="Toggle dark/light mode">
+                                {theme === 'dark' ? '☀️' : '🌙'}
+                            </button>
                             <button className="btn-primary" onClick={handleAddEmployee}>
                                 + Add Employee
                             </button>
@@ -846,7 +923,7 @@
                             </div>
                             <div className="stat-card">
                                 <div className="stat-label">Active</div>
-                                <div className="stat-value" style={{ color: '#F47920' }}>{stats.active}</div>
+                                <div className="stat-value">{stats.active}</div>
                             </div>
                             {DEPARTMENTS.map(dept => (
                                 stats.byDepartment[dept] > 0 && (
@@ -1287,6 +1364,10 @@
                 </div>
             );
         }
+
+        // Initialize theme on page load
+        const savedTheme = localStorage.getItem('mt-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
 
         // Render App
         const root = ReactDOM.createRoot(document.getElementById('root'));
