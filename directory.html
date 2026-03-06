@@ -21,8 +21,8 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #0f172a;
-            color: #e2e8f0;
+            background-color: #0C2637;
+            color: #E0EDEE;
             line-height: 1.6;
         }
 
@@ -35,8 +35,8 @@
 
         /* Header */
         .directory-header {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-bottom: 1px solid #334155;
+            background: linear-gradient(135deg, #133A4F 0%, #0C2637 100%);
+            border-bottom: 2px solid #F47920;
             padding: 1.5rem 2rem;
             display: flex;
             justify-content: space-between;
@@ -54,14 +54,14 @@
         .mt-logo {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            font-size: 20px;
-            color: white;
+        }
+
+        .mt-logo svg {
+            width: 100%;
+            height: 100%;
         }
 
         .header-title {
@@ -77,7 +77,7 @@
         }
 
         .back-link {
-            color: #3b82f6;
+            color: #00BCC8;
             text-decoration: none;
             font-size: 14px;
             padding: 0.5rem 1rem;
@@ -86,7 +86,7 @@
         }
 
         .back-link:hover {
-            background-color: rgba(59, 130, 246, 0.1);
+            background-color: rgba(0, 188, 200, 0.12);
         }
 
         /* Main Content */
@@ -105,15 +105,15 @@
         }
 
         .stat-card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            background-color: #133A4F;
+            border: 1px solid #1A4D65;
             border-radius: 8px;
             padding: 1rem;
         }
 
         .stat-label {
             font-size: 12px;
-            color: #94a3b8;
+            color: #8AACB8;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             margin-bottom: 0.5rem;
@@ -122,12 +122,12 @@
         .stat-value {
             font-size: 24px;
             font-weight: 600;
-            color: #3b82f6;
+            color: #F47920;
         }
 
         .stat-breakdown {
             font-size: 11px;
-            color: #64748b;
+            color: #5A8090;
             margin-top: 0.5rem;
         }
 
@@ -148,29 +148,29 @@
         .search-box input {
             width: 100%;
             padding: 0.75rem 1rem;
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            background-color: #0F2F42;
+            border: 1px solid #1A4D65;
             border-radius: 6px;
-            color: #e2e8f0;
+            color: #E0EDEE;
             font-size: 14px;
             transition: border-color 0.2s;
         }
 
         .search-box input::placeholder {
-            color: #64748b;
+            color: #5A8090;
         }
 
         .search-box input:focus {
             outline: none;
-            border-color: #3b82f6;
+            border-color: #F47920;
         }
 
         select, button {
             padding: 0.75rem 1rem;
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            background-color: #0F2F42;
+            border: 1px solid #1A4D65;
             border-radius: 6px;
-            color: #e2e8f0;
+            color: #E0EDEE;
             font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
@@ -182,7 +182,7 @@
         }
 
         select:hover, select:focus {
-            border-color: #3b82f6;
+            border-color: #1E5068;
             outline: none;
         }
 
@@ -192,42 +192,43 @@
         }
 
         button:hover {
-            background-color: #334155;
-            border-color: #475569;
+            background-color: #133A4F;
+            border-color: #1E5068;
         }
 
         .btn-primary {
-            background-color: #3b82f6;
-            border-color: #3b82f6;
-            color: white;
+            background-color: #F47920;
+            border-color: #F47920;
+            color: #0C2637;
             font-weight: 600;
         }
 
         .btn-primary:hover {
-            background-color: #2563eb;
-            border-color: #2563eb;
+            background-color: #E85D10;
+            border-color: #E85D10;
+            box-shadow: 0 0 12px rgba(244, 121, 32, 0.3);
         }
 
         .btn-danger {
-            background-color: #ef4444;
-            border-color: #ef4444;
+            background-color: #E85D10;
+            border-color: #E85D10;
             color: white;
             font-weight: 600;
         }
 
         .btn-danger:hover {
-            background-color: #dc2626;
-            border-color: #dc2626;
+            background-color: #D44D04;
+            border-color: #D44D04;
         }
 
         .btn-secondary {
-            background-color: #475569;
-            border-color: #475569;
+            background-color: #1A4D65;
+            border-color: #1A4D65;
         }
 
         .btn-secondary:hover {
-            background-color: #64748b;
-            border-color: #64748b;
+            background-color: #1E5068;
+            border-color: #1E5068;
         }
 
         .btn-small {
@@ -243,8 +244,8 @@
         }
 
         .employee-card {
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            background-color: #133A4F;
+            border: 1px solid #1A4D65;
             border-radius: 8px;
             padding: 1.5rem;
             cursor: pointer;
@@ -254,8 +255,8 @@
         }
 
         .employee-card:hover {
-            border-color: #475569;
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);
+            border-color: #1E5068;
+            box-shadow: 0 10px 25px rgba(244, 121, 32, 0.15);
             transform: translateY(-2px);
         }
 
@@ -266,7 +267,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            background: linear-gradient(90deg, #F47920, #00BCC8);
             transition: height 0.3s;
         }
 
@@ -287,13 +288,13 @@
         }
 
         .status-active {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: #10b981;
+            background-color: rgba(244, 121, 32, 0.2);
+            color: #F47920;
         }
 
         .status-inactive {
-            background-color: rgba(156, 163, 175, 0.2);
-            color: #9ca3af;
+            background-color: rgba(90, 128, 144, 0.2);
+            color: #5A8090;
         }
 
         .card-avatar {
@@ -317,19 +318,19 @@
 
         .card-title {
             font-size: 13px;
-            color: #94a3b8;
+            color: #8AACB8;
             margin-bottom: 0.5rem;
         }
 
         .card-detail {
             font-size: 12px;
-            color: #64748b;
+            color: #5A8090;
             margin-bottom: 0.25rem;
             word-break: break-word;
         }
 
         .card-detail-label {
-            color: #475569;
+            color: #1E5068;
             font-weight: 500;
         }
 
@@ -340,7 +341,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(12, 38, 55, 0.8);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -359,8 +360,8 @@
         }
 
         .modal-content {
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            background-color: #133A4F;
+            border: 1px solid #1A4D65;
             border-radius: 12px;
             padding: 2rem;
             max-width: 600px;
@@ -396,7 +397,7 @@
         .modal-close {
             background: none;
             border: none;
-            color: #94a3b8;
+            color: #8AACB8;
             font-size: 24px;
             cursor: pointer;
             padding: 0;
@@ -408,8 +409,8 @@
         }
 
         .modal-close:hover {
-            color: #e2e8f0;
-            background-color: rgba(148, 163, 184, 0.1);
+            color: #E0EDEE;
+            background-color: rgba(26, 77, 101, 0.3);
             border-radius: 4px;
         }
 
@@ -421,7 +422,7 @@
             display: block;
             font-size: 13px;
             font-weight: 600;
-            color: #cbd5e1;
+            color: #E0EDEE;
             margin-bottom: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
@@ -430,10 +431,10 @@
         .form-input, .form-textarea, .form-select {
             width: 100%;
             padding: 0.75rem 1rem;
-            background-color: #0f172a;
-            border: 1px solid #334155;
+            background-color: #0F2F42;
+            border: 1px solid #1A4D65;
             border-radius: 6px;
-            color: #e2e8f0;
+            color: #E0EDEE;
             font-size: 14px;
             font-family: inherit;
             transition: border-color 0.2s;
@@ -441,7 +442,7 @@
 
         .form-input:focus, .form-textarea:focus, .form-select:focus {
             outline: none;
-            border-color: #3b82f6;
+            border-color: #F47920;
         }
 
         .form-textarea {
@@ -482,10 +483,10 @@
 
         .read-only-value {
             padding: 0.75rem 1rem;
-            background-color: #0f172a;
-            border: 1px solid #334155;
+            background-color: #0F2F42;
+            border: 1px solid #1A4D65;
             border-radius: 6px;
-            color: #e2e8f0;
+            color: #E0EDEE;
             font-size: 14px;
         }
 
@@ -493,7 +494,7 @@
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
-            color: #64748b;
+            color: #5A8090;
         }
 
         .empty-state-icon {
@@ -509,8 +510,8 @@
 
         /* Confirmation Dialog */
         .confirmation-modal {
-            background-color: #1e293b;
-            border: 1px solid #334155;
+            background-color: #133A4F;
+            border: 1px solid #1A4D65;
             border-radius: 12px;
             padding: 2rem;
             max-width: 400px;
@@ -525,7 +526,7 @@
         }
 
         .confirmation-text {
-            color: #cbd5e1;
+            color: #E0EDEE;
             margin-bottom: 2rem;
             line-height: 1.6;
         }
@@ -611,12 +612,12 @@
 
         // Department colors
         const DEPARTMENT_COLORS = {
-            'Management': '#8b5cf6',
-            'Construction': '#f59e0b',
-            'Design': '#3b82f6',
-            'Maintenance': '#10b981',
-            'Sales': '#ef4444',
-            'Admin': '#64748b'
+            'Management': '#F47920',
+            'Construction': '#F4A520',
+            'Design': '#00BCC8',
+            'Maintenance': '#2AAA8A',
+            'Sales': '#E85D10',
+            'Admin': '#5A8090'
         };
 
         const DEPARTMENTS = ['Management', 'Construction', 'Design', 'Maintenance', 'Sales', 'Admin'];
@@ -636,7 +637,7 @@
         }
 
         function getDepartmentColor(department) {
-            return DEPARTMENT_COLORS[department] || '#64748b';
+            return DEPARTMENT_COLORS[department] || '#5A8090';
         }
 
         // Sample initial employees
@@ -817,7 +818,14 @@
                     {/* Header */}
                     <div className="directory-header">
                         <div className="header-left">
-                            <div className="mt-logo">MT</div>
+                            <div className="mt-logo">
+                                <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                    <defs><linearGradient id="shield" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F47920"/><stop offset="100%" stop-color="#E85D10"/></linearGradient></defs>
+                                    <path d="M50 5 L90 25 L90 55 Q90 80 50 95 Q10 80 10 55 L10 25 Z" fill="url(#shield)" opacity=".15" stroke="#F47920" stroke-width="1.5"/>
+                                    <text x="50" y="62" text-anchor="middle" font-family="Georgia,serif" font-size="40" font-weight="bold" font-style="italic" fill="#F47920">M</text>
+                                    <text x="62" y="72" text-anchor="middle" font-family="Georgia,serif" font-size="22" font-weight="bold" font-style="italic" fill="#00BCC8">t</text>
+                                </svg>
+                            </div>
                             <h1 className="header-title">Employee Directory</h1>
                         </div>
                         <div className="header-right">
@@ -838,7 +846,7 @@
                             </div>
                             <div className="stat-card">
                                 <div className="stat-label">Active</div>
-                                <div className="stat-value" style={{ color: '#10b981' }}>{stats.active}</div>
+                                <div className="stat-value" style={{ color: '#F47920' }}>{stats.active}</div>
                             </div>
                             {DEPARTMENTS.map(dept => (
                                 stats.byDepartment[dept] > 0 && (
