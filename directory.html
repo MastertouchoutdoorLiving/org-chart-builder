@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Directory - Master Touch Outdoor Living</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body, #root {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        .directory-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .directory-header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 1px solid #334155;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .mt-logo {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 20px;
+            color: white;
+        }
+
+        .header-title {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .back-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 14px;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .back-link:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Main Content */
+        .directory-main {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        /* Stats Bar */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #3b82f6;
+        }
+
+        .stat-breakdown {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 0.5rem;
+        }
+
+        /* Controls */
+        .controls-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input::placeholder {
+            color: #64748b;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        select, button {
+            padding: 0.75rem 1rem;
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select:hover, select:focus {
+            border-color: #3b82f6;
+            outline: none;
+        }
+
+        button {
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #334155;
+            border-color: #475569;
+        }
+
+        .btn-primary {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-danger {
+            background-color: #ef4444;
+            border-color: #ef4444;
+            color: white;
+            font-weight: 600;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            border-color: #dc2626;
+        }
+
+        .btn-secondary {
+            background-color: #475569;
+            border-color: #475569;
+        }
+
+        .btn-secondary:hover {
+            background-color: #64748b;
+            border-color: #64748b;
+        }
+
+        .btn-small {
+            padding: 0.5rem 0.75rem;
+            font-size: 12px;
+        }
+
+        /* Employee Grid */
+        .employees-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .employee-card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .employee-card:hover {
+            border-color: #475569;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .employee-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            transition: height 0.3s;
+        }
+
+        .employee-card:hover::before {
+            height: 6px;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-active {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-inactive {
+            background-color: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+
+        .card-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .card-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .card-title {
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-detail {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+        }
+
+        .card-detail-label {
+            color: #475569;
+            font-weight: 500;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: #e2e8f0;
+            background-color: rgba(148, 163, 184, 0.1);
+            border-radius: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .modal-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-actions button {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .read-only-value {
+            padding: 0.75rem 1rem;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            margin-bottom: 1rem;
+        }
+
+        /* Confirmation Dialog */
+        .confirmation-modal {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 400px;
+            text-align: center;
+            animation: slideUp 0.3s;
+        }
+
+        .confirmation-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .confirmation-text {
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .confirmation-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .confirmation-actions button {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .directory-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-right {
+                width: 100%;
+            }
+
+            .controls-section {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .employees-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+
+            .modal-content {
+                padding: 1.5rem;
+                max-height: 95vh;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .directory-main {
+                padding: 1rem;
+            }
+
+            .employees-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-title {
+                font-size: 20px;
+            }
+
+            .modal-actions {
+                flex-direction: column;
+            }
+
+            .modal-actions button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Department colors
+        const DEPARTMENT_COLORS = {
+            'Management': '#8b5cf6',
+            'Construction': '#f59e0b',
+            'Design': '#3b82f6',
+            'Maintenance': '#10b981',
+            'Sales': '#ef4444',
+            'Admin': '#64748b'
+        };
+
+        const DEPARTMENTS = ['Management', 'Construction', 'Design', 'Maintenance', 'Sales', 'Admin'];
+
+        // Utility functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase()
+                .slice(0, 2);
+        }
+
+        function getDepartmentColor(department) {
+            return DEPARTMENT_COLORS[department] || '#64748b';
+        }
+
+        // Sample initial employees
+        const INITIAL_EMPLOYEES = [
+            {
+                id: generateId(),
+                fullName: 'Nilson Silva',
+                title: 'CEO',
+                department: 'Management',
+                phone: '(239) 555-0101',
+                email: 'nilson@mastertouchoutdoor.com',
+                startDate: '2015-01-15',
+                status: 'Active',
+                emergencyContactName: 'Maria Silva',
+                emergencyContactPhone: '(239) 555-0102',
+                certifications: 'PMP, LEED AP, APLD',
+                skills: 'Project Management, Design, Sales',
+                jobSiteAssignment: 'Main Office',
+                notes: 'Founder and CEO'
+            },
+            {
+                id: generateId(),
+                fullName: 'Sarah Johnson',
+                title: 'Design Director',
+                department: 'Design',
+                phone: '(239) 555-0103',
+                email: 'sarah@mastertouchoutdoor.com',
+                startDate: '2018-03-22',
+                status: 'Active',
+                emergencyContactName: 'Robert Johnson',
+                emergencyContactPhone: '(239) 555-0104',
+                certifications: 'APLD, CAD Certified',
+                skills: 'Pool Design, CAD, Landscape Design',
+                jobSiteAssignment: 'Design Studio',
+                notes: 'Lead design for residential projects'
+            }
+        ];
+
+        // App Component
+        function EmployeeDirectory() {
+            const [employees, setEmployees] = useState(() => {
+                const saved = localStorage.getItem('mt_employees');
+                return saved ? JSON.parse(saved) : INITIAL_EMPLOYEES;
+            });
+
+            const [searchTerm, setSearchTerm] = useState('');
+            const [departmentFilter, setDepartmentFilter] = useState('');
+            const [sortBy, setSortBy] = useState('name');
+            const [selectedEmployee, setSelectedEmployee] = useState(null);
+            const [isEditMode, setIsEditMode] = useState(false);
+            const [showModal, setShowModal] = useState(false);
+            const [showConfirmation, setShowConfirmation] = useState(false);
+            const [employeeToDelete, setEmployeeToDelete] = useState(null);
+
+            // Save to localStorage
+            useEffect(() => {
+                localStorage.setItem('mt_employees', JSON.stringify(employees));
+            }, [employees]);
+
+            // Filtered and sorted employees
+            const filteredEmployees = employees.filter(emp => {
+                const matchesSearch =
+                    emp.fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    emp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    emp.department.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesDept = !departmentFilter || emp.department === departmentFilter;
+                return matchesSearch && matchesDept;
+            });
+
+            const sortedEmployees = [...filteredEmployees].sort((a, b) => {
+                if (sortBy === 'name') {
+                    return a.fullName.localeCompare(b.fullName);
+                } else if (sortBy === 'department') {
+                    return a.department.localeCompare(b.department);
+                }
+                return 0;
+            });
+
+            // Calculate stats
+            const stats = {
+                total: employees.length,
+                active: employees.filter(e => e.status === 'Active').length,
+                byDepartment: DEPARTMENTS.reduce((acc, dept) => {
+                    acc[dept] = employees.filter(e => e.department === dept).length;
+                    return acc;
+                }, {})
+            };
+
+            // Handle employee operations
+            function handleAddEmployee() {
+                const newEmployee = {
+                    id: generateId(),
+                    fullName: '',
+                    title: '',
+                    department: 'Management',
+                    phone: '',
+                    email: '',
+                    startDate: new Date().toISOString().split('T')[0],
+                    status: 'Active',
+                    emergencyContactName: '',
+                    emergencyContactPhone: '',
+                    certifications: '',
+                    skills: '',
+                    jobSiteAssignment: '',
+                    notes: ''
+                };
+                setSelectedEmployee(newEmployee);
+                setIsEditMode(true);
+                setShowModal(true);
+            }
+
+            function handleSelectEmployee(employee) {
+                setSelectedEmployee(employee);
+                setIsEditMode(false);
+                setShowModal(true);
+            }
+
+            function handleSaveEmployee(updatedEmployee) {
+                const existingIndex = employees.findIndex(e => e.id === updatedEmployee.id);
+                if (existingIndex >= 0) {
+                    const updated = [...employees];
+                    updated[existingIndex] = updatedEmployee;
+                    setEmployees(updated);
+                } else {
+                    setEmployees([...employees, updatedEmployee]);
+                }
+                setShowModal(false);
+                setSelectedEmployee(null);
+            }
+
+            function handleDeleteClick(employee) {
+                setEmployeeToDelete(employee);
+                setShowConfirmation(true);
+            }
+
+            function handleConfirmDelete() {
+                setEmployees(employees.filter(e => e.id !== employeeToDelete.id));
+                setShowModal(false);
+                setShowConfirmation(false);
+                setEmployeeToDelete(null);
+                setSelectedEmployee(null);
+            }
+
+            function handleExport() {
+                const dataStr = JSON.stringify(employees, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `mt-employees-${new Date().toISOString().split('T')[0]}.json`;
+                link.click();
+                URL.revokeObjectURL(url);
+            }
+
+            function handleImport(e) {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const imported = JSON.parse(event.target.result);
+                        if (Array.isArray(imported)) {
+                            setEmployees(imported);
+                            alert('Employees imported successfully!');
+                        } else {
+                            alert('Invalid file format. Please ensure it contains an array of employees.');
+                        }
+                    } catch (error) {
+                        alert('Error importing file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+
+            return (
+                <div className="directory-container">
+                    {/* Header */}
+                    <div className="directory-header">
+                        <div className="header-left">
+                            <div className="mt-logo">MT</div>
+                            <h1 className="header-title">Employee Directory</h1>
+                        </div>
+                        <div className="header-right">
+                            <button className="btn-primary" onClick={handleAddEmployee}>
+                                + Add Employee
+                            </button>
+                            <a href="index.html" className="back-link">Back to Hub</a>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="directory-main">
+                        {/* Stats Bar */}
+                        <div className="stats-bar">
+                            <div className="stat-card">
+                                <div className="stat-label">Total Employees</div>
+                                <div className="stat-value">{stats.total}</div>
+                            </div>
+                            <div className="stat-card">
+                                <div className="stat-label">Active</div>
+                                <div className="stat-value" style={{ color: '#10b981' }}>{stats.active}</div>
+                            </div>
+                            {DEPARTMENTS.map(dept => (
+                                stats.byDepartment[dept] > 0 && (
+                                    <div className="stat-card" key={dept}>
+                                        <div className="stat-label">{dept}</div>
+                                        <div className="stat-value" style={{ color: getDepartmentColor(dept) }}>
+                                            {stats.byDepartment[dept]}
+                                        </div>
+                                    </div>
+                                )
+                            ))}
+                        </div>
+
+                        {/* Controls */}
+                        <div className="controls-section">
+                            <div className="search-box">
+                                <input
+                                    type="text"
+                                    placeholder="Search by name, title, or department..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                            <select value={departmentFilter} onChange={(e) => setDepartmentFilter(e.target.value)}>
+                                <option value="">All Departments</option>
+                                {DEPARTMENTS.map(dept => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                ))}
+                            </select>
+                            <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                                <option value="name">Sort by Name</option>
+                                <option value="department">Sort by Department</option>
+                            </select>
+                            <button onClick={handleExport} className="btn-secondary btn-small">
+                                Export JSON
+                            </button>
+                            <label style={{ cursor: 'pointer' }}>
+                                <button className="btn-secondary btn-small" as="span">
+                                    Import JSON
+                                </button>
+                                <input
+                                    type="file"
+                                    accept=".json"
+                                    onChange={handleImport}
+                                    style={{ display: 'none' }}
+                                />
+                            </label>
+                        </div>
+
+                        {/* Employees Grid */}
+                        {sortedEmployees.length > 0 ? (
+                            <div className="employees-grid">
+                                {sortedEmployees.map(employee => (
+                                    <div
+                                        key={employee.id}
+                                        className="employee-card"
+                                        onClick={() => handleSelectEmployee(employee)}
+                                    >
+                                        <div className={`status-badge status-${employee.status.toLowerCase()}`}>
+                                            {employee.status}
+                                        </div>
+                                        <div
+                                            className="card-avatar"
+                                            style={{ backgroundColor: getDepartmentColor(employee.department) }}
+                                        >
+                                            {getInitials(employee.fullName)}
+                                        </div>
+                                        <div className="card-name">{employee.fullName}</div>
+                                        <div className="card-title">{employee.title}</div>
+                                        <div className="card-detail">
+                                            <span className="card-detail-label">Dept:</span> {employee.department}
+                                        </div>
+                                        <div className="card-detail">{employee.phone}</div>
+                                        <div className="card-detail" style={{ wordBreak: 'break-word' }}>
+                                            {employee.email}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="empty-state">
+                                <div className="empty-state-icon">👥</div>
+                                <div className="empty-state-text">
+                                    {employees.length === 0
+                                        ? 'No employees yet. Click "Add Employee" to get started.'
+                                        : 'No employees match your search.'}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Modal */}
+                    {showModal && selectedEmployee && (
+                        <EmployeeModal
+                            employee={selectedEmployee}
+                            isEditMode={isEditMode}
+                            onSave={handleSaveEmployee}
+                            onEditToggle={() => setIsEditMode(!isEditMode)}
+                            onDelete={handleDeleteClick}
+                            onClose={() => {
+                                setShowModal(false);
+                                setSelectedEmployee(null);
+                                setIsEditMode(false);
+                            }}
+                        />
+                    )}
+
+                    {/* Confirmation Dialog */}
+                    {showConfirmation && employeeToDelete && (
+                        <ConfirmationDialog
+                            title="Delete Employee"
+                            message={`Are you sure you want to delete ${employeeToDelete.fullName}? This action cannot be undone.`}
+                            onConfirm={handleConfirmDelete}
+                            onCancel={() => {
+                                setShowConfirmation(false);
+                                setEmployeeToDelete(null);
+                            }}
+                        />
+                    )}
+                </div>
+            );
+        }
+
+        // Employee Modal Component
+        function EmployeeModal({ employee, isEditMode, onSave, onEditToggle, onDelete, onClose }) {
+            const [formData, setFormData] = useState(employee);
+
+            function handleChange(field, value) {
+                setFormData({ ...formData, [field]: value });
+            }
+
+            function handleSave() {
+                if (!formData.fullName.trim()) {
+                    alert('Please enter a full name');
+                    return;
+                }
+                onSave(formData);
+            }
+
+            function handleCancel() {
+                if (isEditMode && employee.id) {
+                    setFormData(employee);
+                }
+                onEditToggle?.();
+            }
+
+            const isNewEmployee = !employee.id || !employee.fullName;
+
+            return (
+                <div className="modal-overlay" onClick={(e) => {
+                    if (e.target === e.currentTarget) onClose();
+                }}>
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h2 className="modal-title">
+                                {isNewEmployee ? 'Add New Employee' : employee.fullName}
+                            </h2>
+                            <button className="modal-close" onClick={onClose}>✕</button>
+                        </div>
+
+                        {/* Avatar */}
+                        {!isEditMode && (
+                            <div
+                                className="modal-avatar"
+                                style={{ backgroundColor: getDepartmentColor(formData.department) }}
+                            >
+                                {getInitials(formData.fullName)}
+                            </div>
+                        )}
+
+                        {/* Form Fields */}
+                        <div className="form-group">
+                            <label className="form-label">Full Name</label>
+                            {isEditMode ? (
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    value={formData.fullName}
+                                    onChange={(e) => handleChange('fullName', e.target.value)}
+                                    placeholder="John Doe"
+                                />
+                            ) : (
+                                <div className="read-only-value">{formData.fullName || '-'}</div>
+                            )}
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label className="form-label">Title/Role</label>
+                                {isEditMode ? (
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        value={formData.title}
+                                        onChange={(e) => handleChange('title', e.target.value)}
+                                        placeholder="Project Manager"
+                                    />
+                                ) : (
+                                    <div className="read-only-value">{formData.title || '-'}</div>
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Department</label>
+                                {isEditMode ? (
+                                    <select
+                                        className="form-select"
+                                        value={formData.department}
+                                        onChange={(e) => handleChange('department', e.target.value)}
+                                    >
+                                        {DEPARTMENTS.map(dept => (
+                                            <option key={dept} value={dept}>{dept}</option>
+                                        ))}
+                                    </select>
+                                ) : (
+                                    <div className="read-only-value">{formData.department}</div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label className="form-label">Phone</label>
+                                {isEditMode ? (
+                                    <input
+                                        type="tel"
+                                        className="form-input"
+                                        value={formData.phone}
+                                        onChange={(e) => handleChange('phone', e.target.value)}
+                                        placeholder="(239) 555-0100"
+                                    />
+                                ) : (
+                                    <div className="read-only-value">{formData.phone || '-'}</div>
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Email</label>
+                                {isEditMode ? (
+                                    <input
+                                        type="email"
+                                        className="form-input"
+                                        value={formData.email}
+                                        onChange={(e) => handleChange('email', e.target.value)}
+                                        placeholder="john@company.com"
+                                    />
+                                ) : (
+                                    <div className="read-only-value">{formData.email || '-'}</div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label className="form-label">Start Date</label>
+                                {isEditMode ? (
+                                    <input
+                                        type="date"
+                                        className="form-input"
+                                        value={formData.startDate}
+                                        onChange={(e) => handleChange('startDate', e.target.value)}
+                                    />
+                                ) : (
+                                    <div className="read-only-value">
+                                        {formData.startDate
+                                            ? new Date(formData.startDate).toLocaleDateString()
+                                            : '-'}
+                                    </div>
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Status</label>
+                                {isEditMode ? (
+                                    <select
+                                        className="form-select"
+                                        value={formData.status}
+                                        onChange={(e) => handleChange('status', e.target.value)}
+                                    >
+                                        <option value="Active">Active</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                ) : (
+                                    <div className="read-only-value">{formData.status}</div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="form-row">
+                            <div className="form-group">
+                                <label className="form-label">Emergency Contact Name</label>
+                                {isEditMode ? (
+                                    <input
+                                        type="text"
+                                        className="form-input"
+                                        value={formData.emergencyContactName}
+                                        onChange={(e) => handleChange('emergencyContactName', e.target.value)}
+                                        placeholder="Jane Doe"
+                                    />
+                                ) : (
+                                    <div className="read-only-value">{formData.emergencyContactName || '-'}</div>
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">Emergency Contact Phone</label>
+                                {isEditMode ? (
+                                    <input
+                                        type="tel"
+                                        className="form-input"
+                                        value={formData.emergencyContactPhone}
+                                        onChange={(e) => handleChange('emergencyContactPhone', e.target.value)}
+                                        placeholder="(239) 555-0101"
+                                    />
+                                ) : (
+                                    <div className="read-only-value">{formData.emergencyContactPhone || '-'}</div>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Certifications (comma separated)</label>
+                            {isEditMode ? (
+                                <textarea
+                                    className="form-textarea"
+                                    value={formData.certifications}
+                                    onChange={(e) => handleChange('certifications', e.target.value)}
+                                    placeholder="CPO, OSHA 30, First Aid"
+                                />
+                            ) : (
+                                <div className="read-only-value">
+                                    {formData.certifications || '-'}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Skills (comma separated)</label>
+                            {isEditMode ? (
+                                <textarea
+                                    className="form-textarea"
+                                    value={formData.skills}
+                                    onChange={(e) => handleChange('skills', e.target.value)}
+                                    placeholder="Gunite, Plumbing, Electrical"
+                                />
+                            ) : (
+                                <div className="read-only-value">
+                                    {formData.skills || '-'}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Current Job Site Assignment</label>
+                            {isEditMode ? (
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    value={formData.jobSiteAssignment}
+                                    onChange={(e) => handleChange('jobSiteAssignment', e.target.value)}
+                                    placeholder="Site name or location"
+                                />
+                            ) : (
+                                <div className="read-only-value">{formData.jobSiteAssignment || '-'}</div>
+                            )}
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label">Notes</label>
+                            {isEditMode ? (
+                                <textarea
+                                    className="form-textarea"
+                                    value={formData.notes}
+                                    onChange={(e) => handleChange('notes', e.target.value)}
+                                    placeholder="General notes..."
+                                />
+                            ) : (
+                                <div className="read-only-value">
+                                    {formData.notes || '-'}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="modal-actions">
+                            {!isNewEmployee && !isEditMode && (
+                                <>
+                                    <button className="btn-primary" onClick={onEditToggle}>
+                                        Edit
+                                    </button>
+                                    <button className="btn-danger" onClick={() => onDelete(employee)}>
+                                        Delete
+                                    </button>
+                                </>
+                            )}
+                            {isEditMode && (
+                                <>
+                                    <button className="btn-primary" onClick={handleSave}>
+                                        Save
+                                    </button>
+                                    {!isNewEmployee && (
+                                        <button className="btn-secondary" onClick={handleCancel}>
+                                            Cancel
+                                        </button>
+                                    )}
+                                    {isNewEmployee && (
+                                        <button className="btn-secondary" onClick={onClose}>
+                                            Cancel
+                                        </button>
+                                    )}
+                                </>
+                            )}
+                            {!isEditMode && (
+                                <button className="btn-secondary" onClick={onClose}>
+                                    Close
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Confirmation Dialog Component
+        function ConfirmationDialog({ title, message, onConfirm, onCancel }) {
+            return (
+                <div className="modal-overlay" onClick={(e) => {
+                    if (e.target === e.currentTarget) onCancel();
+                }}>
+                    <div className="confirmation-modal">
+                        <h3 className="confirmation-title">{title}</h3>
+                        <p className="confirmation-text">{message}</p>
+                        <div className="confirmation-actions">
+                            <button className="btn-danger" onClick={onConfirm}>
+                                Delete
+                            </button>
+                            <button className="btn-secondary" onClick={onCancel}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        // Render App
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<EmployeeDirectory />);
+    </script>
+</body>
+</html>
