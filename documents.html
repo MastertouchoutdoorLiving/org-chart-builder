@@ -814,6 +814,8 @@
             const [showNotes, setShowNotes] = useState(null);
             const [noteText, setNoteText] = useState('');
             const [showMoveFolder, setShowMoveFolder] = useState(null);
+            const [showRename, setShowRename] = useState(null);
+            const [renameText, setRenameText] = useState('');
             const fileInputRef = useRef(null);
 
             // Persist to localStorage
@@ -942,6 +944,19 @@
                 );
                 setShowNotes(null);
                 setNoteText('');
+            };
+
+            // Rename document
+            const renameDocument = (docId) => {
+                if (renameText.trim()) {
+                    setDocuments(prev =>
+                        prev.map(doc =>
+                            doc.id === docId ? { ...doc, name: renameText.trim() } : doc
+                        )
+                    );
+                }
+                setShowRename(null);
+                setRenameText('');
             };
 
             const storageUsed = getApproximateStorageUsage(documents);
@@ -1093,6 +1108,16 @@
                                                         <div className="table-actions">
                                                             <button
                                                                 className="action-button"
+                                                                onClick={() => {
+                                                                    setShowRename(doc.id);
+                                                                    setRenameText(doc.name);
+                                                                }}
+                                                                title="Rename"
+                                                            >
+                                                                ✏️ Rename
+                                                            </button>
+                                                            <button
+                                                                className="action-button"
                                                                 onClick={() => downloadDocument(doc)}
                                                                 title="Download"
                                                             >
@@ -1159,6 +1184,16 @@
                             currentFolder={documents.find(d => d.id === showMoveFolder)?.folder}
                             onClose={() => setShowMoveFolder(null)}
                             onMove={(newFolder) => moveDocument(showMoveFolder, newFolder)}
+                        />
+                    )}
+
+                    {/* Rename Modal */}
+                    {showRename && (
+                        <RenameModal
+                            onClose={() => { setShowRename(null); setRenameText(''); }}
+                            onSave={() => renameDocument(showRename)}
+                            renameText={renameText}
+                            setRenameText={setRenameText}
                         />
                     )}
                 </>
@@ -1264,6 +1299,45 @@
                             >
                                 Move
                             </button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Rename Modal
+        const RenameModal = ({ onClose, onSave, renameText, setRenameText }) => {
+            const inputRef = useRef(null);
+
+            useEffect(() => {
+                if (inputRef.current) {
+                    inputRef.current.focus();
+                    // Select just the filename part (before the last dot)
+                    const lastDot = renameText.lastIndexOf('.');
+                    if (lastDot > 0) {
+                        inputRef.current.setSelectionRange(0, lastDot);
+                    } else {
+                        inputRef.current.select();
+                    }
+                }
+            }, []);
+
+            return (
+                <div className="modal-overlay" onClick={onClose}>
+                    <div className="modal" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">Rename Document</div>
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            className="modal-input"
+                            placeholder="Enter new filename"
+                            value={renameText}
+                            onChange={(e) => setRenameText(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && onSave()}
+                        />
+                        <div className="modal-buttons">
+                            <button className="modal-button secondary" onClick={onClose}>Cancel</button>
+                            <button className="modal-button primary" onClick={onSave}>Rename</button>
                         </div>
                     </div>
                 </div>
