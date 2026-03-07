@@ -4,401 +4,1409 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Storage - Master Touch Outdoor Living</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Inter, Roboto, -apple-system, BlinkMacSystemFont, sans-serif; background: #F0F3F7; color: #1A2B3C; line-height: 1.6; }
-        html, body, #root { height: 100%; width: 100%; }
-        #root { display: flex; flex-direction: column; }
-        .header { background: #FFFFFF; border-bottom: 3px solid #F47920; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; box-shadow: 0 2px 16px rgba(0,0,0,0.08); position: relative; overflow: hidden; }
-        .header::after { content: ''; position: absolute; right: 0; top: 0; width: 280px; height: 100%; background: linear-gradient(90deg, transparent, rgba(244,121,32,0.05)); pointer-events: none; }
-        .header-left { display: flex; align-items: center; gap: 14px; }
-        .logo { width: 44px; height: 44px; background: linear-gradient(135deg,#FFF4EB,#FFE6CC); border: 1.5px solid #FDDAB5; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(244,121,32,0.2); flex-shrink: 0; }
-        .header-title { font-size: 22px; font-weight: 800; color: #1A2B3C; letter-spacing: -.4px; }
-        .back-link { color: #F47920 !important; text-decoration: none; font-size: 13.5px; font-weight: 600; display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: #FFF4EB; border: 1.5px solid #FDDAB5; border-radius: 8px; transition: all 0.2s; }
-        .back-link:hover { background: #FFE6CC; border-color: #F47920; }
-        .container { display: flex; flex: 1; overflow: hidden; }
-        .sidebar { width: 240px; flex-shrink: 0; background: #FFFFFF; border-right: 1.5px solid #E4EAF0; padding: 24px 16px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; box-shadow: 2px 0 8px rgba(0,0,0,0.04); }
-        .sidebar-section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; color: #F47920; margin-bottom: 10px; padding: 0 4px; }
-        .folder-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 9px; cursor: pointer; transition: all 0.18s; border: 1.5px solid transparent; font-size: 14px; font-weight: 500; color: #3A5060; }
-        .folder-item:hover { background: #FFF4EB; border-color: #FDDAB5; color: #1A2B3C; }
-        .folder-item.active { background: linear-gradient(135deg,#F47920,#E85D10); color: #FFFFFF; border-color: transparent; box-shadow: 0 3px 12px rgba(244,121,32,0.3); font-weight: 600; }
-        .folder-name { display: flex; align-items: center; gap: 7px; flex: 1; }
-        .folder-count { font-size: 11px; font-weight: 700; padding: 1px 7px; border-radius: 10px; min-width: 22px; text-align: center; background: #EEF1F4; color: #6B7E8E; }
-        .folder-item.active .folder-count { background: rgba(255,255,255,0.25); color: #FFFFFF; }
-        .create-folder-btn { margin-top: 10px; padding: 10px; background: #FFFFFF; border: 1.5px dashed #FDDAB5; border-radius: 9px; color: #F47920; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: all 0.2s; text-align: center; width: 100%; }
-        .create-folder-btn:hover { background: #FFF4EB; border-style: solid; }
-        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; padding: 28px 32px; gap: 20px; }
-        .content-header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-shrink: 0; }
-        .content-title { font-size: 22px; font-weight: 800; color: #1A2B3C; letter-spacing: -.3px; }
-        .search-bar { padding: 9px 16px; background: #FFFFFF; border: 1.5px solid #E4EAF0; border-radius: 9px; font-size: 14px; color: #1A2B3C; width: 240px; outline: none; transition: all 0.2s; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
-        .search-bar::placeholder { color: #A0B0BC; }
-        .search-bar:focus { border-color: #F47920; box-shadow: 0 0 0 3px rgba(244,121,32,0.1); }
-        .gdrive-panel { background: #FFFFFF; border: 1.5px solid #E4EAF0; border-radius: 14px; padding: 22px 24px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); flex-shrink: 0; }
-        .gdrive-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; }
-        .gdrive-title { font-size: 15px; font-weight: 700; color: #1A2B3C; display: flex; align-items: center; gap: 9px; }
-        .gdrive-icon-box { width: 30px; height: 30px; background: linear-gradient(135deg,#FFF4EB,#FFE6CC); border: 1.5px solid #FDDAB5; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-        .gdrive-subtitle { font-size: 12px; color: #A0B0BC; }
-        .gdrive-connected-box { display: flex; align-items: center; gap: 12px; padding: 13px 16px; background: #E8F9EF; border: 1.5px solid #A8DFC0; border-radius: 10px; font-size: 13.5px; color: #1A5C35; font-weight: 600; flex-wrap: wrap; }
-        .gdrive-folder-path { font-size: 12px; color: #2E7D52; font-weight: 500; margin-top: 2px; }
-        .gdrive-form { display: flex; flex-direction: column; gap: 14px; }
-        .gdrive-form label { font-size: 11.5px; font-weight: 700; color: #4A6170; text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 4px; }
-        .gdrive-form input { width: 100%; padding: 9px 13px; background: #F8FAFC; border: 1.5px solid #E4EAF0; border-radius: 8px; font-size: 13.5px; color: #1A2B3C; outline: none; transition: all 0.2s; }
-        .gdrive-form input:focus { border-color: #F47920; background: #FFFAF7; box-shadow: 0 0 0 3px rgba(244,121,32,0.1); }
-        .gdrive-form input::placeholder { color: #A0B0BC; }
-        .gdrive-row { display: flex; gap: 10px; align-items: flex-end; }
-        .gdrive-row > div { flex: 1; }
-        .gdrive-btn-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .gdrive-btn { padding: 10px 18px; background: linear-gradient(135deg,#F47920,#E85D10); color: #FFFFFF; border: none; border-radius: 8px; font-size: 13.5px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 3px 10px rgba(244,121,32,0.28); display: inline-flex; align-items: center; gap: 7px; }
-        .gdrive-btn:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(244,121,32,0.38); }
-        .gdrive-btn.sec { background: #F8FAFC; color: #4A6170; border: 1.5px solid #E4EAF0; box-shadow: none; }
-        .gdrive-btn.sec:hover { background: #FFF4EB; border-color: #FDDAB5; color: #F47920; transform: none; box-shadow: none; }
-        .gdrive-btn.disc { background: #FFF5F5; color: #DC3545; border: 1.5px solid #FADADD; box-shadow: none; font-size: 12.5px; padding: 8px 14px; }
-        .gdrive-btn.disc:hover { background: #FFE8EA; border-color: #DC3545; transform: none; box-shadow: none; }
-        .gdrive-help { font-size: 12px; color: #6B7E8E; line-height: 1.65; padding: 12px 14px; background: #F8FAFC; border-radius: 8px; border: 1px solid #EEF1F4; }
-        .gdrive-help a { color: #F47920; text-decoration: none; font-weight: 600; }
-        .gdrive-help a:hover { text-decoration: underline; }
-        .gdrive-notice { font-size: 12px; font-weight: 600; }
-        .gdrive-edit-btn { font-size: 12px; color: #A0B0BC; font-weight: 500; background: none; border: none; cursor: pointer; text-decoration: underline; padding: 0; }
-        .gdrive-edit-btn:hover { color: #F47920; }
-        .upload-section { background: #FFFFFF; border: 1.5px solid #E4EAF0; border-radius: 14px; padding: 24px; box-shadow: 0 1px 6px rgba(0,0,0,0.05); flex-shrink: 0; }
-        .upload-zone { border: 2px dashed #FDDAB5; border-radius: 10px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.25s; background: #FFFAF7; }
-        .upload-zone:hover { border-color: #F47920; background: #FFF4EB; }
-        .upload-zone.drag-over { border-color: #F47920; background: #FFE6CC; }
-        .upload-zone input { display: none; }
-        .upload-icon { font-size: 2.2rem; margin-bottom: 10px; opacity: 0.85; }
-        .upload-text { color: #1A2B3C; font-weight: 600; font-size: 15px; margin-bottom: 5px; }
-        .upload-subtext { color: #8A9BAB; font-size: 13px; margin-bottom: 16px; }
-        .upload-button { padding: 10px 24px; background: linear-gradient(135deg,#F47920,#E85D10); color: #FFFFFF; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 3px 10px rgba(244,121,32,0.3); }
-        .upload-button:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(244,121,32,0.4); }
-        .file-size-warning { color: #E87520; font-size: 12.5px; margin-top: 10px; font-weight: 500; }
-        .upload-progress { margin-top: 14px; padding: 12px 16px; background: #F8FAFC; border-radius: 8px; border: 1px solid #E4EAF0; }
-        .progress-bar { width: 100%; height: 6px; background: #EEF1F4; border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg,#F47920,#E85D10); transition: width 0.3s ease; border-radius: 6px; }
-        .storage-info { background: #FFFFFF; border: 1.5px solid #E4EAF0; border-radius: 12px; padding: 16px 20px; box-shadow: 0 1px 5px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 16px; flex-wrap: wrap; flex-shrink: 0; }
-        .storage-bar { flex: 1; min-width: 200px; }
-        .storage-label { display: flex; justify-content: space-between; font-size: 13px; color: #6B7E8E; margin-bottom: 9px; font-weight: 500; }
-        .storage-label span:last-child { font-weight: 600; color: #1A2B3C; }
-        .storage-progress { width: 100%; height: 7px; background: #EEF1F4; border-radius: 6px; overflow: hidden; }
-        .storage-fill { height: 100%; background: linear-gradient(90deg,#F47920,#E85D10); border-radius: 6px; transition: width 0.4s ease; }
-        .storage-fill.warning { background: linear-gradient(90deg,#DC3545,#C0392B); }
-        .storage-fill.gdrive { background: linear-gradient(90deg,#1A9E50,#16854A); }
-        .documents-section { background: #FFFFFF; border: 1.5px solid #E4EAF0; border-radius: 14px; overflow: hidden; box-shadow: 0 1px 6px rgba(0,0,0,0.05); min-height: 200px; }
-        .documents-empty { text-align: center; padding: 40px 20px; color: #A0B0BC; }
-        .documents-empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
-        .documents-table { width: 100%; border-collapse: collapse; }
-        .table-header { background: linear-gradient(135deg,#F8FAFB,#F2F5F8); border-bottom: 1.5px solid #E4EAF0; }
-        .table-header-cell { padding: 12px 16px; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; color: #6B7E8E; text-align: left; }
-        .table-row { border-bottom: 1px solid #EEF1F4; transition: background 0.15s; }
-        .table-row:last-child { border-bottom: none; }
-        .table-row:hover { background: #FFFAF7; }
-        .table-cell { padding: 13px 16px; vertical-align: middle; }
-        .file-name { display: flex; align-items: center; gap: 8px; font-size: 14.5px; font-weight: 600; color: #1A2B3C; word-break: break-word; }
-        .file-icon { font-size: 1.6rem; flex-shrink: 0; }
-        .file-size { font-size: 13px; color: #6B7E8E; }
-        .file-date { font-size: 13px; color: #6B7E8E; }
-        .table-actions { display: flex; gap: 6px; flex-wrap: wrap; }
-        .action-button { padding: 5px 11px; border-radius: 7px; border: 1.5px solid #E4EAF0; background: #F8FAFC; color: #4A6170; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.18s; white-space: nowrap; }
-        .action-button:hover { background: #FFF4EB; border-color: #FDDAB5; color: #F47920; }
-        .action-button.delete { color: #DC3545; border-color: #FADADD; background: #FFF5F5; }
-        .action-button.delete:hover { background: #FFE8EA; border-color: #DC3545; }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.45); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #FFFFFF; border: 1.5px solid #E4EAF0; border-radius: 14px; padding: 28px; max-width: 480px; width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
-        .modal-header { font-size: 18px; font-weight: 700; margin-bottom: 18px; color: #1A2B3C; }
-        .modal-input { width: 100%; padding: 9px 13px; background: #F8FAFC; border: 1.5px solid #E4EAF0; border-radius: 8px; color: #1A2B3C; margin-bottom: 12px; font-size: 14px; font-family: inherit; outline: none; }
-        .modal-input:focus { border-color: #F47920; background: #FFFAF7; box-shadow: 0 0 0 3px rgba(244,121,32,0.1); }
-        .modal-textarea { width: 100%; padding: 9px 13px; background: #F8FAFC; border: 1.5px solid #E4EAF0; border-radius: 8px; color: #1A2B3C; margin-bottom: 12px; font-size: 14px; font-family: inherit; resize: vertical; min-height: 100px; outline: none; }
-        .modal-textarea:focus { border-color: #F47920; background: #FFFAF7; box-shadow: 0 0 0 3px rgba(244,121,32,0.1); }
-        .modal-select { width: 100%; padding: 9px 13px; background: #F8FAFC; border: 1.5px solid #E4EAF0; border-radius: 8px; color: #1A2B3C; margin-bottom: 12px; font-size: 14px; font-family: inherit; outline: none; }
-        .modal-select:focus { border-color: #F47920; }
-        .modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
-        .modal-button { padding: 9px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 13.5px; transition: all 0.2s; }
-        .modal-button.primary { background: linear-gradient(135deg,#F47920,#E85D10); color: #FFFFFF; box-shadow: 0 3px 10px rgba(244,121,32,0.3); }
-        .modal-button.primary:hover { transform: translateY(-1px); }
-        .modal-button.secondary { background: #F8FAFC; color: #4A6170; border: 1.5px solid #E4EAF0; }
-        .modal-button.secondary:hover { background: #FFF4EB; border-color: #FDDAB5; color: #F47920; }
-        ::-webkit-scrollbar { width: 7px; }
-        ::-webkit-scrollbar-track { background: #F0F3F7; }
-        ::-webkit-scrollbar-thumb { background: #D0D8E0; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #F47920; }
-        @media (max-width: 768px) { .container { flex-direction: column; } .sidebar { width: 100%; border-right: none; border-bottom: 1.5px solid #E4EAF0; max-height: 260px; } .main-content { padding: 16px; } .gdrive-row { flex-direction: column; } .search-bar { width: 100%; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root[data-theme="dark"] {
+            --bg-primary: #0C2637;
+            --bg-secondary: #133A4F;
+            --bg-tertiary: #1A4D65;
+            --text-primary: #E0EDEE;
+            --text-heading: #FFFFFF;
+            --text-muted: #8AACB8;
+            --border-color: #1A4D65;
+            --accent-orange: #F47920;
+            --accent-orange-hover: #E85D10;
+            --accent-teal: #00BCC8;
+            --accent-teal-light: #4DD8E0;
+            --hover-bg: #1A4D65;
+            --input-bg: #0C2637;
+            --scrollbar-bg: #0F2F42;
+            --scrollbar-thumb: #1A4D65;
+            --scrollbar-thumb-hover: #1E5068;
+            --tooltip-bg: #0C2637;
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #EFF3F5;
+            --bg-secondary: #FFFFFF;
+            --bg-tertiary: #D0DBE0;
+            --text-primary: #2A3F4D;
+            --text-heading: #132B3A;
+            --text-muted: #5A7585;
+            --border-color: #D0DBE0;
+            --accent-orange: #E06A10;
+            --accent-orange-hover: #C85809;
+            --accent-teal: #00919B;
+            --accent-teal-light: #1BA5B0;
+            --hover-bg: #EFF3F5;
+            --input-bg: #F5F7F8;
+            --scrollbar-bg: #E8EDF0;
+            --scrollbar-thumb: #C0CDD5;
+            --scrollbar-thumb-hover: #A8BACC;
+            --tooltip-bg: #FFFFFF;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            transition: background .3s, color .3s;
+        }
+
+        html, body, #root {
+            height: 100%;
+            width: 100%;
+        }
+
+        #root {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+            border-bottom: 2px solid var(--accent-orange);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .back-button {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 2px solid var(--accent-orange);
+            color: var(--accent-orange);
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .back-button:hover {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .theme-toggle {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 44px;
+        }
+
+        .theme-toggle:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent-orange);
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .folder-section {
+            margin-bottom: 2rem;
+        }
+
+        .folder-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.75rem;
+        }
+
+        .folder-list {
+            list-style: none;
+        }
+
+        .folder-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-primary);
+        }
+
+        .folder-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .folder-item.active {
+            background: var(--accent-orange);
+            color: white;
+            font-weight: 600;
+        }
+
+        .folder-count {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .add-folder-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent-teal);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+
+        .add-folder-btn:hover {
+            background: var(--accent-teal-light);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content-header {
+            padding: 1.5rem 2rem;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .search-box {
+            padding: 0.75rem 1rem;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            width: 300px;
+            transition: all 0.3s;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 0 2px rgba(0, 188, 200, 0.1);
+        }
+
+        .upload-area {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .upload-section {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .upload-section:hover,
+        .upload-section.drag-over {
+            border-color: var(--accent-teal);
+            background: rgba(0, 188, 200, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtext {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .file-size-warning {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* Document List */
+        .document-list {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .document-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .document-item:hover {
+            border-color: var(--accent-orange);
+            background: var(--hover-bg);
+        }
+
+        .document-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .document-name {
+            font-weight: 600;
+            color: var(--text-heading);
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+        }
+
+        .document-meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 1rem;
+            flex-shrink: 0;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: var(--accent-orange);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0.5rem;
+            transition: all 0.3s;
+            border-radius: 4px;
+        }
+
+        .icon-btn:hover {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .icon-btn.delete:hover {
+            background: #ff4444;
+            color: white;
+        }
+
+        /* Upload Progress */
+        .upload-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--accent-orange);
+            height: 4px;
+            transition: width 0.3s;
+            z-index: 1000;
+        }
+
+        .upload-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-orange), var(--accent-teal));
+            transition: width 0.3s;
+            width: 0%;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 2rem;
+            min-width: 400px;
+            max-width: 600px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-heading);
+            margin-bottom: 1rem;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+        }
+
+        .modal-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 150px;
+        }
+
+        .modal-textarea:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-orange-hover);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+        }
+
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Toast Styles */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--accent-orange);
+            padding: 1rem 1.5rem;
+            border-radius: 4px;
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast.error {
+            border-left-color: #ff4444;
+        }
+
+        .toast.success {
+            border-left-color: var(--accent-teal);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(244, 121, 32, 0.2);
+            border-top-color: var(--accent-orange);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 998;
+        }
+
+        .loading-content {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .loading-text {
+            margin-top: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--scrollbar-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--scrollbar-thumb-hover);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                max-height: 200px;
+                display: flex;
+                gap: 2rem;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding: 1rem;
+            }
+
+            .folder-section {
+                margin-bottom: 0;
+                white-space: nowrap;
+            }
+
+            .search-box {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .modal {
+                min-width: 90%;
+                max-width: 90%;
+                padding: 1.5rem;
+            }
+
+            .document-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .document-actions {
+                margin-left: 0;
+                margin-top: 1rem;
+                width: 100%;
+            }
+
+            .toast {
+                bottom: 1rem;
+                right: 1rem;
+                left: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .header-title {
+                font-size: 1.3rem;
+            }
+
+            .content-header {
+                padding: 1rem;
+            }
+
+            .upload-area {
+                padding: 1rem;
+            }
+
+            .upload-section {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
-<div id="root"></div>
-<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-<script type="text/babel">
-const { useState, useEffect, useRef, useCallback } = React;
-const generateId = () => crypto.randomUUID ? crypto.randomUUID() : Date.now()+'-'+Math.random();
-const formatFileSize = (b) => { if(!b) return '0 B'; const k=1024,s=['B','KB','MB','GB'],i=Math.floor(Math.log(b)/Math.log(k)); return +(b/Math.pow(k,i)).toFixed(2)+' '+s[i]; };
-const getFileType = (n) => { const e=n.split('.').pop().toLowerCase(); if(['pdf'].includes(e)) return 'pdf'; if(['jpg','jpeg','png','gif','webp','svg'].includes(e)) return 'image'; if(['doc','docx','txt','rtf'].includes(e)) return 'doc'; if(['xls','xlsx','csv'].includes(e)) return 'spreadsheet'; return 'other'; };
-const getFileIcon = (t) => ({'pdf':'📄','image':'🖼️','doc':'📋','spreadsheet':'📊','other':'📦'}[t]||'📦');
-const formatDate = (d) => new Date(d).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
-const getStorageUsage = (docs) => docs.reduce((t,d)=>t+(d.base64Data||'').length*0.75,0);
+    <div id="root"></div>
 
-const GDrive = {
-  isConnected: () => localStorage.getItem('mt_gdrive_connected') === 'true',
-  getConfig: () => JSON.parse(localStorage.getItem('mt_gdrive_config')||'{}'),
-  getFolderName: () => localStorage.getItem('mt_gdrive_folder_name')||'Master Touch Documents',
-  getFolderId: () => localStorage.getItem('mt_gdrive_folder_id')||null,
-  loadGapi: () => new Promise((res,rej) => {
-    if(window.gapi){res();return;}
-    const s=document.createElement('script');
-    s.src='https://apis.google.com/js/api.js';
-    s.onload=res; s.onerror=()=>rej(new Error('Failed to load Google API'));
-    document.head.appendChild(s);
-  }),
-  connect: async (clientId, apiKey, folderName, onStatus) => {
-    onStatus('Loading Google API...','#F47920');
-    await GDrive.loadGapi();
-    onStatus('Initializing...','#F47920');
-    await new Promise((res,rej)=>gapi.load('client:auth2',{callback:res,onerror:rej}));
-    await gapi.client.init({ apiKey, clientId, discoveryDocs:['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'], scope:'https://www.googleapis.com/auth/drive.file' });
-    const auth=gapi.auth2.getAuthInstance();
-    if(!auth.isSignedIn.get()){ onStatus('Opening sign-in...','#F47920'); await auth.signIn(); }
-    onStatus('Setting up folder...','#F47920');
-    const lr=await gapi.client.drive.files.list({q:"name='"+folderName+"' and mimeType='application/vnd.google-apps.folder' and trashed=false",fields:'files(id,name)',spaces:'drive'});
-    let fid;
-    if(lr.result.files&&lr.result.files.length>0){ fid=lr.result.files[0].id; }
-    else { const cr=await gapi.client.drive.files.create({resource:{name:folderName,mimeType:'application/vnd.google-apps.folder'},fields:'id'}); fid=cr.result.id; }
-    localStorage.setItem('mt_gdrive_connected','true');
-    localStorage.setItem('mt_gdrive_folder_id',fid);
-    localStorage.setItem('mt_gdrive_folder_name',folderName);
-    onStatus('Connected! Refreshing...','#1A9E50');
-    setTimeout(()=>window.location.reload(),1000);
-  },
-  disconnect: () => {
-    ['mt_gdrive_connected','mt_gdrive_folder_id','mt_gdrive_folder_name'].forEach(k=>localStorage.removeItem(k));
-    if(window.gapi&&window.gapi.auth2){try{gapi.auth2.getAuthInstance().signOut();}catch(e){}}
-    window.location.reload();
-  },
-  getToken: () => gapi.auth2.getAuthInstance().currentUser.get().getAuthResponse().access_token,
-  uploadFile: async (file, folder) => {
-    if(!GDrive.isConnected()) return null;
-    const fid=GDrive.getFolderId(); if(!fid) return null;
-    const meta={name:file.name,parents:[fid],appProperties:{mtFolder:folder}};
-    const form=new FormData();
-    form.append('metadata',new Blob([JSON.stringify(meta)],{type:'application/json'}));
-    form.append('file',file);
-    const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name,size,modifiedTime,webViewLink',{method:'POST',headers:{Authorization:'Bearer '+GDrive.getToken()},body:form});
-    return res.ok ? await res.json() : null;
-  },
-  listFiles: async (folder) => {
-    if(!GDrive.isConnected()) return [];
-    const fid=GDrive.getFolderId(); if(!fid) return [];
-    const res=await gapi.client.drive.files.list({q:"'"+fid+"' in parents and trashed=false and appProperties has { key='mtFolder' and value='"+folder+"' }",fields:'files(id,name,size,modifiedTime,webViewLink)',orderBy:'modifiedTime desc'});
-    return res.result.files||[];
-  },
-  deleteFile: async (id) => { await fetch('https://www.googleapis.com/drive/v3/files/'+id,{method:'DELETE',headers:{Authorization:'Bearer '+GDrive.getToken()}}); },
-  renameFile: async (id, name) => { await fetch('https://www.googleapis.com/drive/v3/files/'+id,{method:'PATCH',headers:{Authorization:'Bearer '+GDrive.getToken(),'Content-Type':'application/json'},body:JSON.stringify({name})}); }
-};
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-const GDrivePanel = () => {
-  const cfg=GDrive.getConfig();
-  const connected=GDrive.isConnected();
-  const [cid,setCid]=useState(cfg.clientId||'');
-  const [key,setKey]=useState(cfg.apiKey||'');
-  const [fn,setFn]=useState(cfg.folderName||'Master Touch Documents');
-  const [notice,setNotice]=useState('');
-  const [noticeColor,setNoticeColor]=useState('#1A9E50');
-  const [showEdit,setShowEdit]=useState(false);
-  const saveOnly=()=>{
-    if(!cid.trim()||!key.trim()){setNotice('Enter both Client ID and API Key');setNoticeColor('#E87520');return;}
-    localStorage.setItem('mt_gdrive_config',JSON.stringify({clientId:cid.trim(),apiKey:key.trim(),folderName:fn.trim()||'Master Touch Documents'}));
-    setNotice('Settings saved!');setNoticeColor('#1A9E50');setTimeout(()=>setNotice(''),2500);
-  };
-  const connect=async()=>{
-    if(!cid.trim()||!key.trim()){setNotice('Enter both Client ID and API Key');setNoticeColor('#E87520');return;}
-    localStorage.setItem('mt_gdrive_config',JSON.stringify({clientId:cid.trim(),apiKey:key.trim(),folderName:fn.trim()||'Master Touch Documents'}));
-    try { await GDrive.connect(cid.trim(),key.trim(),fn.trim()||'Master Touch Documents',(m,c)=>{setNotice(m);setNoticeColor(c);}); }
-    catch(err) { const m=err.error==='popup_blocked_by_browser'?'Popup blocked! Allow popups.':err.error==='access_denied'?'Access denied.':err.error==='idpiframe_initialization_failed'?'Invalid Client ID or domain not authorized.':'Error: '+(err.error||err.message||'Unknown'); setNotice(m);setNoticeColor('#DC3545'); }
-  };
-  const form=(
-    <div className="gdrive-form">
-      <div className="gdrive-help">
-        <strong>Setup Guide:</strong><br/>
-        1. <a href="https://console.cloud.google.com" target="_blank">Google Cloud Console</a> - Create/select project<br/>
-        2. Enable <strong>Google Drive API</strong> (APIs &amp; Services - Library)<br/>
-        3. Create <strong>OAuth 2.0 Client ID</strong> (Web Application type)<br/>
-        4. Authorized JavaScript origins: <code style={{background:'#eee',padding:'1px 5px',borderRadius:'3px',fontSize:'11px'}}>https://mastertouchoutdoorliving.github.io</code><br/>
-        5. Create an <strong>API Key</strong> (restrict to Drive API)<br/>
-        6. Paste below and click Connect
-      </div>
-      <div className="gdrive-row">
-        <div><label>OAuth Client ID</label><input type="text" placeholder="xxxx.apps.googleusercontent.com" value={cid} onChange={e=>setCid(e.target.value)}/></div>
-        <div><label>API Key</label><input type="password" placeholder="AIzaSy..." value={key} onChange={e=>setKey(e.target.value)}/></div>
-      </div>
-      <div><label>Drive Folder Name</label><input type="text" placeholder="Master Touch Documents" value={fn} onChange={e=>setFn(e.target.value)}/></div>
-      <div className="gdrive-btn-row">
-        <button className="gdrive-btn" onClick={connect}>Connect to Google Drive</button>
-        <button className="gdrive-btn sec" onClick={saveOnly}>Save Settings</button>
-        {notice&&<span className="gdrive-notice" style={{color:noticeColor}}>{notice}</span>}
-      </div>
-    </div>
-  );
-  if(connected) return(
-    <div className="gdrive-panel">
-      <div className="gdrive-header">
-        <div className="gdrive-title"><div className="gdrive-icon-box">☁️</div>Google Drive Storage</div>
-        <button className="gdrive-edit-btn" onClick={()=>setShowEdit(!showEdit)}>{showEdit?'Hide':'Edit settings'}</button>
-      </div>
-      <div className="gdrive-connected-box">
-        <span style={{fontSize:'20px'}}>✅</span>
-        <div><div>Connected to Google Drive</div><div className="gdrive-folder-path">📁 {GDrive.getFolderName()}</div></div>
-        <button className="gdrive-btn disc" style={{marginLeft:'auto'}} onClick={GDrive.disconnect}>Disconnect</button>
-      </div>
-      {showEdit&&<div style={{marginTop:'16px'}}>{form}</div>}
-    </div>
-  );
-  return(
-    <div className="gdrive-panel">
-      <div className="gdrive-header">
-        <div className="gdrive-title"><div className="gdrive-icon-box">☁️</div>Connect Google Drive</div>
-        <span className="gdrive-subtitle">Unlimited storage, synced across devices</span>
-      </div>
-      {form}
-    </div>
-  );
-};
+    <script type="text/babel">
+        const { useState, useCallback, useRef, useEffect } = React;
 
-const DocumentApp = () => {
-  const DEFAULT_FOLDERS=['Insurance','Disclaimers','Contracts','Safety Documents','Employee Forms','Licenses & Permits','Other'];
-  const connected=GDrive.isConnected();
-  const [folders,setFolders]=useState(()=>{const s=localStorage.getItem('mt-folders');return s?JSON.parse(s):DEFAULT_FOLDERS;});
-  const [documents,setDocuments]=useState(()=>{const s=localStorage.getItem('mt-documents');return s?JSON.parse(s):[];});
-  const [selectedFolder,setSelectedFolder]=useState(DEFAULT_FOLDERS[0]);
-  const [searchTerm,setSearchTerm]=useState('');
-  const [uploadProgress,setUploadProgress]=useState(0);
-  const [showUploadProgress,setShowUploadProgress]=useState(false);
-  const [showCreateFolder,setShowCreateFolder]=useState(false);
-  const [showNotes,setShowNotes]=useState(null);
-  const [noteText,setNoteText]=useState('');
-  const [showMoveFolder,setShowMoveFolder]=useState(null);
-  const [showRename,setShowRename]=useState(null);
-  const [renameText,setRenameText]=useState('');
-  const [driveFiles,setDriveFiles]=useState([]);
-  const [driveLoading,setDriveLoading]=useState(false);
-  const fileInputRef=useRef(null);
-  useEffect(()=>{localStorage.setItem('mt-folders',JSON.stringify(folders));},[folders]);
-  useEffect(()=>{localStorage.setItem('mt-documents',JSON.stringify(documents));},[documents]);
-  useEffect(()=>{
-    if(connected){
-      setDriveLoading(true);
-      GDrive.listFiles(selectedFolder).then(f=>{setDriveFiles(f);setDriveLoading(false);}).catch(()=>setDriveLoading(false));
-    }
-  },[selectedFolder,connected]);
-  const filteredDocs=documents.filter(d=>(!selectedFolder||d.folder===selectedFolder)&&(!searchTerm||d.name.toLowerCase().includes(searchTerm.toLowerCase())));
-  const getFolderCount=f=>documents.filter(d=>d.folder===f).length;
-  const handleFileUpload=useCallback(async(files)=>{
-    for(let i=0;i<files.length;i++){
-      const file=files[i];
-      if(connected){
-        setUploadProgress(Math.round(((i+0.5)/files.length)*100));setShowUploadProgress(true);
-        const df=await GDrive.uploadFile(file,selectedFolder);
-        if(df) setDriveFiles(prev=>[{id:df.id,name:df.name,size:df.size,modifiedTime:df.modifiedTime,webViewLink:df.webViewLink},...prev]);
-        setUploadProgress(Math.round(((i+1)/files.length)*100));
-      } else {
-        if(file.size>5*1024*1024){alert('File "'+file.name+'" exceeds 5MB limit');continue;}
-        await new Promise(res=>{
-          const r=new FileReader();
-          r.onload=e=>{setDocuments(prev=>[...prev,{id:generateId(),name:file.name,folder:selectedFolder,fileType:getFileType(file.name),fileSize:file.size,base64Data:e.target.result,uploadDate:new Date().toISOString(),notes:''}]);setUploadProgress(Math.round(((i+1)/files.length)*100));res();};
-          r.readAsDataURL(file);
-        });
-        setShowUploadProgress(true);
-      }
-    }
-    setTimeout(()=>{setShowUploadProgress(false);setUploadProgress(0);},2000);
-  },[selectedFolder,connected]);
-  const handleDragOver=e=>{e.preventDefault();e.currentTarget.classList.add('drag-over');};
-  const handleDragLeave=e=>{e.preventDefault();e.currentTarget.classList.remove('drag-over');};
-  const handleDrop=e=>{e.preventDefault();e.currentTarget.classList.remove('drag-over');handleFileUpload(e.dataTransfer.files);};
-  const downloadDoc=doc=>{const a=document.createElement('a');a.href=doc.base64Data;a.download=doc.name;document.body.appendChild(a);a.click();document.body.removeChild(a);};
-  const deleteDoc=id=>{if(confirm('Delete this document?'))setDocuments(prev=>prev.filter(d=>d.id!==id));};
-  const deleteDriveFile=async id=>{if(!confirm('Delete from Google Drive?'))return;await GDrive.deleteFile(id);setDriveFiles(prev=>prev.filter(f=>f.id!==id));};
-  const createFolder=n=>{if(n.trim()&&!folders.includes(n)){setFolders(prev=>[...prev,n]);setShowCreateFolder(false);}};
-  const moveDoc=(id,nf)=>{setDocuments(prev=>prev.map(d=>d.id===id?{...d,folder:nf}:d));setShowMoveFolder(null);};
-  const updateNotes=id=>{setDocuments(prev=>prev.map(d=>d.id===id?{...d,notes:noteText}:d));setShowNotes(null);setNoteText('');};
-  const renameDoc=id=>{if(renameText.trim())setDocuments(prev=>prev.map(d=>d.id===id?{...d,name:renameText.trim()}:d));setShowRename(null);setRenameText('');};
-  const renameDrive=async(id,n)=>{await GDrive.renameFile(id,n);setDriveFiles(prev=>prev.map(f=>f.id===id?{...f,name:n}:f));};
-  const storageUsed=getStorageUsage(documents);
-  const storagePct=Math.min((storageUsed/(5*1024*1024))*100,100);
-  const allFiles=connected
-    ?driveFiles.map(f=>({...f,isDrive:true,fileType:getFileType(f.name),fileSize:parseInt(f.size)||0,uploadDate:f.modifiedTime})).filter(f=>!searchTerm||f.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    :filteredDocs;
-  return(<>
-    <div className="header">
-      <div className="header-left">
-        <div className="logo">
-          <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <defs><linearGradient id="sh" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#F47920"/><stop offset="100%" stopColor="#E85D10"/></linearGradient></defs>
-            <path d="M50 5 L90 25 L90 55 Q90 80 50 95 Q10 80 10 55 L10 25 Z" fill="url(#sh)" opacity=".15" stroke="#F47920" strokeWidth="2"/>
-            <text x="50" y="62" textAnchor="middle" fontFamily="Georgia,serif" fontSize="40" fontWeight="bold" fontStyle="italic" fill="#F47920">M</text>
-            <text x="62" y="72" textAnchor="middle" fontFamily="Georgia,serif" fontSize="22" fontWeight="bold" fontStyle="italic" fill="#00BCC8">t</text>
-          </svg>
-        </div>
-        <h1 className="header-title">Document Storage</h1>
-      </div>
-      <a href="index.html" className="back-link">Back to Hub</a>
-    </div>
-    <div className="container">
-      <div className="sidebar">
-        <div className="sidebar-section-title">Folders</div>
-        {folders.map(f=>(<div key={f} className={"folder-item "+(selectedFolder===f?'active':'')} onClick={()=>setSelectedFolder(f)}><span className="folder-name">📁 {f}</span><span className="folder-count">{getFolderCount(f)}</span></div>))}
-        <button className="create-folder-btn" onClick={()=>setShowCreateFolder(true)}>+ New Folder</button>
-      </div>
-      <div className="main-content">
-        <div className="content-header">
-          <h2 className="content-title">{selectedFolder}</h2>
-          <input type="text" className="search-bar" placeholder="Search documents..." value={searchTerm} onChange={e=>setSearchTerm(e.target.value)}/>
-        </div>
-        <GDrivePanel/>
-        <div className="upload-section">
-          <div className="upload-zone" onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop} onClick={()=>fileInputRef.current?.click()}>
-            <input ref={fileInputRef} type="file" multiple onChange={e=>handleFileUpload(e.target.files)}/>
-            <div className="upload-icon">📤</div>
-            <div className="upload-text">Drag and drop files here</div>
-            <div className="upload-subtext">or click to select files</div>
-            <button className="upload-button">Choose Files</button>
-            <div className="file-size-warning">{connected?'Files saved to Google Drive (unlimited)':'Local storage only (5MB limit) - Connect Google Drive above for unlimited storage'}</div>
-          </div>
-          {showUploadProgress&&(<div className="upload-progress"><div className="progress-bar"><div className="progress-fill" style={{width:uploadProgress+'%'}}></div></div><div style={{fontSize:'12px',color:'#6B7E8E',textAlign:'center'}}>{connected?'Uploading to Drive...':'Saving...'} {Math.round(uploadProgress)}%</div></div>)}
-        </div>
-        {!connected&&(<div className="storage-info"><div className="storage-bar"><div className="storage-label"><span>Local Storage</span><span>{formatFileSize(storageUsed)} / 5 MB</span></div><div className="storage-progress"><div className={"storage-fill "+(storagePct>80?'warning':'')} style={{width:storagePct+'%'}}></div></div></div><span style={{fontSize:'13px',color:storagePct>80?'#DC3545':'#6B7E8E',fontWeight:'600'}}>{Math.round(storagePct)}% full</span></div>)}
-        {connected&&(<div className="storage-info"><div className="storage-bar"><div className="storage-label"><span>Google Drive</span><span style={{color:'#1A9E50'}}>Connected - Unlimited Storage</span></div><div className="storage-progress"><div className="storage-fill gdrive" style={{width:'15%'}}></div></div></div></div>)}
-        <div className="documents-section">
-          {driveLoading?(<div className="documents-empty"><div style={{fontSize:'1.5rem',marginBottom:'8px'}}>⏳</div><p>Loading from Google Drive...</p></div>)
-          :allFiles.length===0?(<div className="documents-empty"><div className="documents-empty-icon">📂</div><p>{searchTerm?'No documents found':'No documents yet'}</p><p style={{fontSize:'13px',marginTop:'6px'}}>{searchTerm?'Try a different search':'Upload a document to get started'}</p></div>)
-          :(<table className="documents-table"><thead className="table-header"><tr><th className="table-header-cell">Name</th><th className="table-header-cell">Size</th><th className="table-header-cell">Date</th><th className="table-header-cell">Actions</th></tr></thead><tbody>
-            {allFiles.map(doc=>(<tr key={doc.id} className="table-row">
-              <td className="table-cell"><div className="file-name"><span className="file-icon">{getFileIcon(doc.fileType)}</span>{doc.name}</div></td>
-              <td className="table-cell file-size">{formatFileSize(doc.fileSize)}</td>
-              <td className="table-cell file-date">{formatDate(doc.uploadDate)}</td>
-              <td className="table-cell"><div className="table-actions">
-                {doc.isDrive?<button className="action-button" onClick={()=>{const n=prompt('New name:',doc.name);if(n&&n.trim())renameDrive(doc.id,n.trim());}}>✏️ Rename</button>:<button className="action-button" onClick={()=>{setShowRename(doc.id);setRenameText(doc.name);}}>✏️ Rename</button>}
-                <button className="action-button" onClick={()=>doc.isDrive?window.open(doc.webViewLink,'_blank'):downloadDoc(doc)}>⬇️ {doc.isDrive?'Open':'Download'}</button>
-                {!doc.isDrive&&<button className="action-button" onClick={()=>{setShowNotes(doc.id);setNoteText(doc.notes||'');}}>📝 Notes</button>}
-                {!doc.isDrive&&<button className="action-button" onClick={()=>setShowMoveFolder(doc.id)}>📁 Move</button>}
-                <button className="action-button delete" onClick={()=>doc.isDrive?deleteDriveFile(doc.id):deleteDoc(doc.id)}>🗑️ Delete</button>
-              </div></td>
-            </tr>))}
-          </tbody></table>)}
-        </div>
-      </div>
-    </div>
-    {showCreateFolder&&<CreateFolderModal onClose={()=>setShowCreateFolder(false)} onCreate={createFolder} existingFolders={folders}/>}
-    {showNotes&&<NotesModal onClose={()=>setShowNotes(null)} onSave={()=>updateNotes(showNotes)} noteText={noteText} setNoteText={setNoteText}/>}
-    {showMoveFolder&&<MoveFolderModal folders={folders} currentFolder={documents.find(d=>d.id===showMoveFolder)?.folder} onClose={()=>setShowMoveFolder(null)} onMove={nf=>moveDoc(showMoveFolder,nf)}/>}
-    {showRename&&<RenameModal onClose={()=>{setShowRename(null);setRenameText('');}} onSave={()=>renameDoc(showRename)} renameText={renameText} setRenameText={setRenameText}/>}
-  </>);
-};
+        // Supabase initialization
+        const supabaseUrl = 'https://jpieratyhqxkwbjzcjqk.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwaWVyYXR5aHF4a3dianpjanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDY3NzIsImV4cCI6MjA4ODQyMjc3Mn0.Dr0IDpWxWy8hHIKwlckDWvFNx6gmzQghhbqQgy4jRiI';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-const CreateFolderModal=({onClose,onCreate,existingFolders})=>{const[n,setN]=useState('');const r=useRef(null);useEffect(()=>r.current?.focus(),[]);const go=()=>{if(n.trim()){if(existingFolders.includes(n)){alert('Exists');return;}onCreate(n);}};return(<div className="modal-overlay" onClick={onClose}><div className="modal" onClick={e=>e.stopPropagation()}><div className="modal-header">Create New Folder</div><input ref={r} type="text" className="modal-input" placeholder="Folder name" value={n} onChange={e=>setN(e.target.value)} onKeyPress={e=>e.key==='Enter'&&go()}/><div className="modal-buttons"><button className="modal-button secondary" onClick={onClose}>Cancel</button><button className="modal-button primary" onClick={go}>Create</button></div></div></div>);};
-const NotesModal=({onClose,onSave,noteText,setNoteText})=>{const r=useRef(null);useEffect(()=>r.current?.focus(),[]);return(<div className="modal-overlay" onClick={onClose}><div className="modal" onClick={e=>e.stopPropagation()}><div className="modal-header">Document Notes</div><textarea ref={r} className="modal-textarea" placeholder="Add notes..." value={noteText} onChange={e=>setNoteText(e.target.value)}/><div className="modal-buttons"><button className="modal-button secondary" onClick={onClose}>Cancel</button><button className="modal-button primary" onClick={onSave}>Save Notes</button></div></div></div>);};
-const MoveFolderModal=({folders,currentFolder,onClose,onMove})=>{const[sel,setSel]=useState('');const avail=folders.filter(f=>f!==currentFolder);return(<div className="modal-overlay" onClick={onClose}><div className="modal" onClick={e=>e.stopPropagation()}><div className="modal-header">Move Document</div><select className="modal-select" value={sel} onChange={e=>setSel(e.target.value)}><option value="">-- Select Folder --</option>{avail.map(f=><option key={f} value={f}>{f}</option>)}</select><div className="modal-buttons"><button className="modal-button secondary" onClick={onClose}>Cancel</button><button className="modal-button primary" onClick={()=>sel&&onMove(sel)} disabled={!sel}>Move</button></div></div></div>);};
-const RenameModal=({onClose,onSave,renameText,setRenameText})=>{const r=useRef(null);useEffect(()=>{if(r.current){r.current.focus();const d=renameText.lastIndexOf('.');if(d>0)r.current.setSelectionRange(0,d);else r.current.select();}},[]);return(<div className="modal-overlay" onClick={onClose}><div className="modal" onClick={e=>e.stopPropagation()}><div className="modal-header">Rename Document</div><input ref={r} type="text" className="modal-input" placeholder="New filename" value={renameText} onChange={e=>setRenameText(e.target.value)} onKeyPress={e=>e.key==='Enter'&&onSave()}/><div className="modal-buttons"><button className="modal-button secondary" onClick={onClose}>Cancel</button><button className="modal-button primary" onClick={onSave}>Rename</button></div></div></div>);};
+        // Utility functions
+        const generateId = () => {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        };
 
-ReactDOM.createRoot(document.getElementById('root')).render(<DocumentApp/>);
-</script>
+        const getFileType = (filename) => {
+            const ext = filename.split('.').pop().toLowerCase();
+            const types = {
+                pdf: '📄',
+                doc: '📝',
+                docx: '📝',
+                xls: '📊',
+                xlsx: '📊',
+                ppt: '📺',
+                pptx: '📺',
+                jpg: '🖼️',
+                jpeg: '🖼️',
+                png: '🖼️',
+                gif: '🖼️',
+                zip: '📦',
+                rar: '📦'
+            };
+            return types[ext] || '📎';
+        };
+
+        const formatFileSize = (bytes) => {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+        };
+
+        const formatDate = (isoString) => {
+            const date = new Date(isoString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        };
+
+        // Toast component
+        const Toast = ({ message, type, onClose }) => {
+            useEffect(() => {
+                const timer = setTimeout(onClose, 3000);
+                return () => clearTimeout(timer);
+            }, [onClose]);
+
+            return (
+                <div className={`toast ${type}`}>
+                    {message}
+                </div>
+            );
+        };
+
+        // Loading overlay
+        const LoadingOverlay = ({ visible }) => {
+            if (!visible) return null;
+            return (
+                <div className="loading-overlay">
+                    <div className="loading-content">
+                        <div className="spinner"></div>
+                        <div className="loading-text">Loading files...</div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        const DocumentApp = () => {
+            const DEFAULT_FOLDERS = ['Insurance', 'Disclaimers', 'Contracts', 'Safety Documents', 'Employee Forms', 'Licenses & Permits', 'Other'];
+
+            const [theme, setTheme] = useState(() => {
+                return localStorage.getItem('mt-theme') || 'dark';
+            });
+
+            const [folders, setFolders] = useState(() => {
+                const saved = localStorage.getItem('mt-folders');
+                return saved ? JSON.parse(saved) : DEFAULT_FOLDERS;
+            });
+
+            const [documents, setDocuments] = useState([]);
+            const [selectedFolder, setSelectedFolder] = useState(DEFAULT_FOLDERS[0]);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [uploadProgress, setUploadProgress] = useState(0);
+            const [showUploadProgress, setShowUploadProgress] = useState(false);
+            const [showCreateFolder, setShowCreateFolder] = useState(false);
+            const [showNotes, setShowNotes] = useState(null);
+            const [noteText, setNoteText] = useState('');
+            const [showMoveFolder, setShowMoveFolder] = useState(null);
+            const [showRename, setShowRename] = useState(null);
+            const [renameText, setRenameText] = useState('');
+            const [isLoading, setIsLoading] = useState(false);
+            const [toastMessage, setToastMessage] = useState(null);
+            const [toastType, setToastType] = useState('success');
+            const [isUploading, setIsUploading] = useState(false);
+            const fileInputRef = useRef(null);
+
+            // Initialize theme on mount
+            useEffect(() => {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('mt-theme', theme);
+            }, [theme]);
+
+            // Persist folders to localStorage
+            useEffect(() => {
+                localStorage.setItem('mt-folders', JSON.stringify(folders));
+            }, [folders]);
+
+            // Load files when folder changes
+            useEffect(() => {
+                loadDocuments(selectedFolder);
+            }, [selectedFolder]);
+
+            // Load documents from Supabase
+            const loadDocuments = async (folderName) => {
+                setIsLoading(true);
+                try {
+                    const { data, error } = await supabase.storage
+                        .from('company-documents')
+                        .list(folderName, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+
+                    if (error) {
+                        console.error('Error loading files:', error);
+                        showToast('Failed to load files', 'error');
+                        setDocuments([]);
+                        return;
+                    }
+
+                    if (!data) {
+                        setDocuments([]);
+                        return;
+                    }
+
+                    // Filter out .keep files and convert to document objects
+                    const docs = data
+                        .filter(file => !file.name.endsWith('.keep'))
+                        .map(file => {
+                            const fileSize = file.metadata?.size || 0;
+                            return {
+                                id: file.id,
+                                name: file.name,
+                                folder: folderName,
+                                fileType: getFileType(file.name),
+                                fileSize: fileSize,
+                                uploadDate: file.created_at,
+                                path: `${folderName}/${file.name}`
+                            };
+                        });
+
+                    setDocuments(docs);
+                } catch (error) {
+                    console.error('Unexpected error loading documents:', error);
+                    showToast('An error occurred while loading files', 'error');
+                    setDocuments([]);
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            // Show toast notification
+            const showToast = (message, type = 'success') => {
+                setToastMessage(message);
+                setToastType(type);
+            };
+
+            // Toggle theme
+            const toggleTheme = () => {
+                setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark');
+            };
+
+            // Filter documents
+            const filteredDocuments = documents.filter(doc => {
+                const searchMatch = !searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase());
+                return searchMatch;
+            });
+
+            // Get folder document count
+            const getFolderCount = (folder) => {
+                return documents.filter(doc => doc.folder === folder).length;
+            };
+
+            // Handle file upload
+            const handleFileUpload = useCallback(async (files) => {
+                if (!files || files.length === 0) return;
+
+                setIsUploading(true);
+                let uploadedCount = 0;
+
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+
+                    if (file.size > 50 * 1024 * 1024) { // 50MB limit for cloud storage
+                        showToast(`File "${file.name}" exceeds 50MB limit`, 'error');
+                        continue;
+                    }
+
+                    try {
+                        const timestamp = Date.now();
+                        const filePath = `${selectedFolder}/${timestamp}_${file.name}`;
+
+                        const { data, error } = await supabase.storage
+                            .from('company-documents')
+                            .upload(filePath, file, {
+                                cacheControl: '3600',
+                                upsert: false
+                            });
+
+                        if (error) {
+                            console.error('Upload error:', error);
+                            showToast(`Failed to upload "${file.name}"`, 'error');
+                        } else {
+                            uploadedCount++;
+                            setUploadProgress(Math.round(((i + 1) / files.length) * 100));
+                        }
+                    } catch (error) {
+                        console.error('Upload exception:', error);
+                        showToast(`Error uploading "${file.name}"`, 'error');
+                    }
+                }
+
+                setShowUploadProgress(true);
+                setUploadProgress(100);
+
+                setTimeout(() => {
+                    setShowUploadProgress(false);
+                    setUploadProgress(0);
+                    setIsUploading(false);
+                    loadDocuments(selectedFolder);
+
+                    if (uploadedCount > 0) {
+                        showToast(`Successfully uploaded ${uploadedCount} file(s)`, 'success');
+                    }
+                }, 1500);
+            }, [selectedFolder]);
+
+            // Handle drag and drop
+            const handleDragOver = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.currentTarget.classList.add('drag-over');
+            };
+
+            const handleDragLeave = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.currentTarget.classList.remove('drag-over');
+            };
+
+            const handleDrop = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.currentTarget.classList.remove('drag-over');
+                handleFileUpload(e.dataTransfer.files);
+            };
+
+            // Download document
+            const downloadDocument = async (doc) => {
+                try {
+                    const { data, error } = supabase.storage
+                        .from('company-documents')
+                        .getPublicUrl(doc.path);
+
+                    if (error) {
+                        console.error('Error getting download URL:', error);
+                        showToast('Failed to download file', 'error');
+                        return;
+                    }
+
+                    const link = document.createElement('a');
+                    link.href = data.publicUrl;
+                    link.download = doc.name;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                } catch (error) {
+                    console.error('Download error:', error);
+                    showToast('Failed to download file', 'error');
+                }
+            };
+
+            // Delete document
+            const deleteDocument = async (id, path) => {
+                if (!confirm('Are you sure you want to delete this document?')) return;
+
+                try {
+                    const { error } = await supabase.storage
+                        .from('company-documents')
+                        .remove([path]);
+
+                    if (error) {
+                        console.error('Delete error:', error);
+                        showToast('Failed to delete file', 'error');
+                    } else {
+                        showToast('Document deleted successfully', 'success');
+                        // Remove from local notes storage
+                        localStorage.removeItem(`mt-doc-notes-${path}`);
+                        setDocuments(prev => prev.filter(doc => doc.id !== id));
+                    }
+                } catch (error) {
+                    console.error('Delete exception:', error);
+                    showToast('Failed to delete file', 'error');
+                }
+            };
+
+            // Create new folder
+            const createFolder = async (folderName) => {
+                if (!folderName.trim() || folders.includes(folderName)) {
+                    showToast('Folder name is invalid or already exists', 'error');
+                    return;
+                }
+
+                try {
+                    // Create .keep file to initialize folder in Supabase
+                    const { error } = await supabase.storage
+                        .from('company-documents')
+                        .upload(`${folderName}/.keep`, new Blob(['']), {
+                            cacheControl: '3600',
+                            upsert: true
+                        });
+
+                    if (error) {
+                        console.error('Folder creation error:', error);
+                        showToast('Failed to create folder', 'error');
+                    } else {
+                        setFolders(prev => [...prev, folderName]);
+                        setShowCreateFolder(false);
+                        showToast('Folder created successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Folder creation exception:', error);
+                    showToast('Failed to create folder', 'error');
+                }
+            };
+
+            // Move document to folder
+            const moveDocument = async (docId, newFolder, oldPath) => {
+                try {
+                    const newPath = `${newFolder}/${oldPath.split('/').pop()}`;
+
+                    const { error } = await supabase.storage
+                        .from('company-documents')
+                        .move(oldPath, newPath);
+
+                    if (error) {
+                        console.error('Move error:', error);
+                        showToast('Failed to move file', 'error');
+                    } else {
+                        setDocuments(prev =>
+                            prev.map(doc =>
+                                doc.id === docId ? { ...doc, folder: newFolder, path: newPath } : doc
+                            )
+                        );
+                        setShowMoveFolder(null);
+                        showToast('Document moved successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Move exception:', error);
+                    showToast('Failed to move file', 'error');
+                }
+            };
+
+            // Update notes (stored in localStorage with path key)
+            const updateNotes = (docPath) => {
+                localStorage.setItem(`mt-doc-notes-${docPath}`, noteText);
+                setShowNotes(null);
+                setNoteText('');
+                showToast('Notes saved', 'success');
+            };
+
+            // Get notes for a document
+            const getNotes = (docPath) => {
+                return localStorage.getItem(`mt-doc-notes-${docPath}`) || '';
+            };
+
+            // Rename document
+            const renameDocument = async (docId, oldPath) => {
+                if (!renameText.trim()) {
+                    showToast('File name cannot be empty', 'error');
+                    return;
+                }
+
+                try {
+                    const folder = oldPath.split('/')[0];
+                    const oldFileName = oldPath.split('/').pop().split('_').slice(1).join('_'); // Remove timestamp
+                    const newFileName = renameText.trim();
+                    const newPath = `${folder}/${oldPath.split('/')[1].split('_')[0]}_${newFileName}`;
+
+                    const { error } = await supabase.storage
+                        .from('company-documents')
+                        .move(oldPath, newPath);
+
+                    if (error) {
+                        console.error('Rename error:', error);
+                        showToast('Failed to rename file', 'error');
+                    } else {
+                        // Move notes to new path
+                        const oldNotes = localStorage.getItem(`mt-doc-notes-${oldPath}`);
+                        if (oldNotes) {
+                            localStorage.removeItem(`mt-doc-notes-${oldPath}`);
+                            localStorage.setItem(`mt-doc-notes-${newPath}`, oldNotes);
+                        }
+
+                        setDocuments(prev =>
+                            prev.map(doc =>
+                                doc.id === docId ? { ...doc, name: newFileName, path: newPath } : doc
+                            )
+                        );
+                        setShowRename(null);
+                        setRenameText('');
+                        showToast('File renamed successfully', 'success');
+                    }
+                } catch (error) {
+                    console.error('Rename exception:', error);
+                    showToast('Failed to rename file', 'error');
+                }
+            };
+
+            return (
+                <>
+                    {/* Header */}
+                    <div className="header">
+                        <div className="header-left">
+                            <svg className="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                <defs><linearGradient id="shield" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stopColor="#F47920"/><stop offset="100%" stopColor="#E85D10"/></linearGradient></defs>
+                                <path d="M50 5 L90 25 L90 55 Q90 80 50 95 Q10 80 10 55 L10 25 Z" fill="url(#shield)" opacity=".15" stroke="#F47920" strokeWidth="1.5"/>
+                                <circle cx="50" cy="50" r="15" fill="#F47920" opacity=".3"/>
+                            </svg>
+                            <div className="header-title">Document Storage</div>
+                        </div>
+                        <div className="header-right">
+                            <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
+                                {theme === 'dark' ? '☀️' : '🌙'}
+                            </button>
+                            <button className="back-button" onClick={() => window.location.href = 'index.html'}>
+                                ← Back to Hub
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Upload Progress Bar */}
+                    {showUploadProgress && (
+                        <div className="upload-progress">
+                            <div className="upload-progress-bar" style={{ width: `${uploadProgress}%` }}></div>
+                        </div>
+                    )}
+
+                    {/* Main Content */}
+                    <div className="main-content">
+                        {/* Sidebar */}
+                        <div className="sidebar">
+                            <div className="folder-section">
+                                <div className="folder-title">📁 Folders</div>
+                                <ul className="folder-list">
+                                    {folders.map(folder => (
+                                        <li
+                                            key={folder}
+                                            className={`folder-item ${selectedFolder === folder ? 'active' : ''}`}
+                                            onClick={() => setSelectedFolder(folder)}
+                                        >
+                                            <span>{folder}</span>
+                                            <span className="folder-count">({getFolderCount(folder)})</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                                <button className="add-folder-btn" onClick={() => setShowCreateFolder(true)}>
+                                    + New Folder
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Content Area */}
+                        <div className="content">
+                            <div className="content-header">
+                                <h2 style={{ color: 'var(--text-heading)' }}>{selectedFolder}</h2>
+                                <input
+                                    type="text"
+                                    className="search-box"
+                                    placeholder="🔍 Search documents..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+
+                            <div
+                                className="upload-area"
+                                onDragOver={handleDragOver}
+                                onDragLeave={handleDragLeave}
+                                onDrop={handleDrop}
+                            >
+                                {filteredDocuments.length === 0 ? (
+                                    <div
+                                        className="upload-section"
+                                        onClick={() => fileInputRef.current?.click()}
+                                    >
+                                        <div className="upload-icon">📤</div>
+                                        <div className="upload-text">Drag files here or click to upload</div>
+                                        <div className="upload-subtext">Supported formats: PDF, DOC, XLS, PNG, JPG, and more</div>
+                                        {isUploading && <div style={{ marginTop: '1rem' }}><div className="spinner"></div></div>}
+                                        <div className="file-size-warning">⚠️ Max 50MB per file</div>
+                                    </div>
+                                ) : (
+                                    <div className="document-list">
+                                        {filteredDocuments.map(doc => (
+                                            <div key={doc.id} className="document-item">
+                                                <div className="document-info">
+                                                    <div className="document-name">
+                                                        {doc.fileType} {doc.name}
+                                                    </div>
+                                                    <div className="document-meta">
+                                                        {formatFileSize(doc.fileSize)} • {formatDate(doc.uploadDate)}
+                                                    </div>
+                                                </div>
+                                                <div className="document-actions">
+                                                    <button
+                                                        className="icon-btn"
+                                                        onClick={() => {
+                                                            setShowNotes(doc.id);
+                                                            setNoteText(getNotes(doc.path));
+                                                        }}
+                                                        title="Add notes"
+                                                    >
+                                                        📝
+                                                    </button>
+                                                    <button
+                                                        className="icon-btn"
+                                                        onClick={() => downloadDocument(doc)}
+                                                        title="Download"
+                                                    >
+                                                        ⬇️
+                                                    </button>
+                                                    <button
+                                                        className="icon-btn"
+                                                        onClick={() => {
+                                                            setShowRename(doc.id);
+                                                            setRenameText(doc.name);
+                                                        }}
+                                                        title="Rename"
+                                                    >
+                                                        ✏️
+                                                    </button>
+                                                    <button
+                                                        className="icon-btn"
+                                                        onClick={() => setShowMoveFolder(doc.id)}
+                                                        title="Move"
+                                                    >
+                                                        ➡️
+                                                    </button>
+                                                    <button
+                                                        className="icon-btn delete"
+                                                        onClick={() => deleteDocument(doc.id, doc.path)}
+                                                        title="Delete"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    id="fileInput"
+                                    multiple
+                                    onChange={(e) => handleFileUpload(e.target.files)}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Create Folder Modal */}
+                    {showCreateFolder && (
+                        <div className="modal-overlay" onClick={() => setShowCreateFolder(false)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-title">Create New Folder</div>
+                                <input
+                                    type="text"
+                                    className="modal-input"
+                                    placeholder="Folder name"
+                                    onKeyPress={(e) => {
+                                        if (e.key === 'Enter') {
+                                            createFolder(e.target.value);
+                                        }
+                                    }}
+                                    autoFocus
+                                    id="folderInput"
+                                />
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setShowCreateFolder(false)}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => {
+                                            const input = document.getElementById('folderInput');
+                                            createFolder(input.value);
+                                        }}
+                                    >
+                                        Create
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Notes Modal */}
+                    {showNotes && (
+                        <div className="modal-overlay" onClick={() => setShowNotes(null)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-title">Document Notes</div>
+                                <textarea
+                                    className="modal-textarea"
+                                    value={noteText}
+                                    onChange={(e) => setNoteText(e.target.value)}
+                                    placeholder="Add notes about this document..."
+                                    autoFocus
+                                />
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setShowNotes(null)}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => {
+                                            const doc = documents.find(d => d.id === showNotes);
+                                            if (doc) updateNotes(doc.path);
+                                        }}
+                                    >
+                                        Save Notes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Rename Modal */}
+                    {showRename && (
+                        <div className="modal-overlay" onClick={() => setShowRename(null)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-title">Rename Document</div>
+                                <input
+                                    type="text"
+                                    className="modal-input"
+                                    value={renameText}
+                                    onChange={(e) => setRenameText(e.target.value)}
+                                    onKeyPress={(e) => {
+                                        if (e.key === 'Enter') {
+                                            const doc = documents.find(d => d.id === showRename);
+                                            if (doc) renameDocument(showRename, doc.path);
+                                        }
+                                    }}
+                                    autoFocus
+                                />
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setShowRename(null)}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => {
+                                            const doc = documents.find(d => d.id === showRename);
+                                            if (doc) renameDocument(showRename, doc.path);
+                                        }}
+                                    >
+                                        Rename
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Move Folder Modal */}
+                    {showMoveFolder && (
+                        <div className="modal-overlay" onClick={() => setShowMoveFolder(null)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-title">Move to Folder</div>
+                                <div style={{ maxHeight: '300px', overflowY: 'auto', marginBottom: '1rem' }}>
+                                    {folders.map(folder => {
+                                        const doc = documents.find(d => d.id === showMoveFolder);
+                                        if (folder === doc?.folder) return null;
+                                        return (
+                                            <button
+                                                key={folder}
+                                                className="btn btn-secondary"
+                                                style={{
+                                                    display: 'block',
+                                                    width: '100%',
+                                                    textAlign: 'left',
+                                                    marginBottom: '0.5rem',
+                                                    padding: '0.75rem 1rem'
+                                                }}
+                                                onClick={() => {
+                                                    const doc = documents.find(d => d.id === showMoveFolder);
+                                                    if (doc) moveDocument(showMoveFolder, folder, doc.path);
+                                                }}
+                                            >
+                                                {folder}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setShowMoveFolder(null)}>
+                                        Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Loading Overlay */}
+                    <LoadingOverlay visible={isLoading} />
+
+                    {/* Toast Notification */}
+                    {toastMessage && (
+                        <Toast
+                            message={toastMessage}
+                            type={toastType}
+                            onClose={() => setToastMessage(null)}
+                        />
+                    )}
+                </>
+            );
+        };
+
+        // Render app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<DocumentApp />);
+    </script>
 </body>
 </html>
