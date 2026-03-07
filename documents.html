@@ -144,6 +144,139 @@
             border-color: var(--accent-orange);
         }
 
+        .activity-log-btn {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 44px;
+        }
+
+        .activity-log-btn:hover {
+            background: var(--hover-bg);
+            border-color: var(--accent-orange);
+        }
+
+        /* Activity Log Drawer */
+        .activity-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 997;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-drawer.open {
+            right: 0;
+        }
+
+        .drawer-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .drawer-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .drawer-close-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.5rem;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .drawer-close-btn:hover {
+            color: var(--accent-orange);
+        }
+
+        .drawer-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .audit-entry {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .audit-entry:last-child {
+            border-bottom: none;
+        }
+
+        .audit-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .audit-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .audit-description {
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+        }
+
+        .audit-time {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 996;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .drawer-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
         /* Main Content */
         .main-content {
             display: flex;
@@ -199,9 +332,60 @@
             font-weight: 600;
         }
 
+        .folder-item-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .folder-expand-toggle {
+            background: transparent;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            padding: 0;
+            width: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .folder-name {
+            flex: 1;
+            min-width: 0;
+        }
+
         .folder-count {
             font-size: 0.8rem;
             opacity: 0.7;
+            flex-shrink: 0;
+        }
+
+        .subfolder-item {
+            padding: 0.5rem 0.75rem 0.5rem 2rem;
+            margin-bottom: 0.3rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .subfolder-item:hover {
+            background: var(--hover-bg);
+        }
+
+        .subfolder-item.active {
+            background: var(--accent-orange);
+            color: white;
+            font-weight: 600;
+        }
+
+        .subfolder-list {
+            list-style: none;
         }
 
         .add-folder-btn {
@@ -240,6 +424,20 @@
             gap: 1rem;
         }
 
+        .content-title-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .breadcrumb {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
         .search-box {
             padding: 0.75rem 1rem;
             background: var(--input-bg);
@@ -262,6 +460,75 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+        }
+
+        .subfolders-section {
+            margin-bottom: 2rem;
+        }
+
+        .subfolders-header {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-heading);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .subfolders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .subfolder-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .subfolder-card:hover {
+            border-color: var(--accent-orange);
+            background: var(--hover-bg);
+        }
+
+        .subfolder-card-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subfolder-card-name {
+            font-weight: 600;
+            color: var(--text-heading);
+            margin-bottom: 0.25rem;
+            word-break: break-word;
+        }
+
+        .subfolder-card-count {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .add-subfolder-btn {
+            padding: 0.75rem 1rem;
+            background: var(--accent-teal);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .add-subfolder-btn:hover {
+            background: var(--accent-teal-light);
         }
 
         .upload-section {
@@ -640,6 +907,11 @@
                 right: 1rem;
                 left: 1rem;
             }
+
+            .activity-drawer {
+                width: 100%;
+                right: -100%;
+            }
         }
 
         @media (max-width: 480px) {
@@ -718,6 +990,21 @@
             return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         };
 
+        const getRelativeTime = (isoString) => {
+            const date = new Date(isoString);
+            const now = new Date();
+            const seconds = Math.floor((now - date) / 1000);
+
+            if (seconds < 60) return 'just now';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            if (days < 7) return `${days}d ago`;
+            return date.toLocaleDateString();
+        };
+
         // Toast component
         const Toast = ({ message, type, onClose }) => {
             useEffect(() => {
@@ -745,6 +1032,51 @@
             );
         };
 
+        // Audit Trail helper
+        const logAudit = async (action, details, fileName, folder) => {
+            try {
+                let auditLog = [];
+
+                // Fetch current audit log
+                try {
+                    const { data } = await supabase.storage
+                        .from('company-documents')
+                        .download('_audit/audit-log.json');
+
+                    if (data) {
+                        const text = await data.text();
+                        auditLog = JSON.parse(text);
+                    }
+                } catch (e) {
+                    // File doesn't exist yet, start with empty array
+                    auditLog = [];
+                }
+
+                // Create new entry
+                const newEntry = {
+                    id: generateId(),
+                    action,
+                    details,
+                    timestamp: new Date().toISOString(),
+                    fileName: fileName || null,
+                    folder: folder || null
+                };
+
+                // Prepend new entry and trim to 500 max
+                auditLog.unshift(newEntry);
+                auditLog = auditLog.slice(0, 500);
+
+                // Upload back to Supabase
+                const blob = new Blob([JSON.stringify(auditLog, null, 2)], { type: 'application/json' });
+                await supabase.storage
+                    .from('company-documents')
+                    .upload('_audit/audit-log.json', blob, { upsert: true });
+
+            } catch (error) {
+                console.error('Audit logging error:', error);
+            }
+        };
+
         // Main App Component
         const DocumentApp = () => {
             const DEFAULT_FOLDERS = ['Insurance', 'Disclaimers', 'Contracts', 'Safety Documents', 'Employee Forms', 'Licenses & Permits', 'Other'];
@@ -758,12 +1090,16 @@
                 return saved ? JSON.parse(saved) : DEFAULT_FOLDERS;
             });
 
+            const [expandedFolders, setExpandedFolders] = useState({});
             const [documents, setDocuments] = useState([]);
             const [selectedFolder, setSelectedFolder] = useState(DEFAULT_FOLDERS[0]);
+            const [selectedSubfolder, setSelectedSubfolder] = useState(null);
+            const [subfolders, setSubfolders] = useState([]);
             const [searchTerm, setSearchTerm] = useState('');
             const [uploadProgress, setUploadProgress] = useState(0);
             const [showUploadProgress, setShowUploadProgress] = useState(false);
             const [showCreateFolder, setShowCreateFolder] = useState(false);
+            const [showCreateSubfolder, setShowCreateSubfolder] = useState(false);
             const [showNotes, setShowNotes] = useState(null);
             const [noteText, setNoteText] = useState('');
             const [showMoveFolder, setShowMoveFolder] = useState(null);
@@ -773,6 +1109,8 @@
             const [toastMessage, setToastMessage] = useState(null);
             const [toastType, setToastType] = useState('success');
             const [isUploading, setIsUploading] = useState(false);
+            const [showActivityLog, setShowActivityLog] = useState(false);
+            const [auditLog, setAuditLog] = useState([]);
             const fileInputRef = useRef(null);
 
             // Initialize theme on mount
@@ -786,18 +1124,41 @@
                 localStorage.setItem('mt-folders', JSON.stringify(folders));
             }, [folders]);
 
-            // Load files when folder changes
+            // Load files and subfolders when folder/subfolder changes
             useEffect(() => {
-                loadDocuments(selectedFolder);
-            }, [selectedFolder]);
+                loadDocuments(selectedFolder, selectedSubfolder);
+                loadSubfolders(selectedFolder);
+            }, [selectedFolder, selectedSubfolder]);
 
-            // Load documents from Supabase
-            const loadDocuments = async (folderName) => {
-                setIsLoading(true);
+            // Load subfolders from Supabase
+            const loadSubfolders = async (folderName) => {
                 try {
                     const { data, error } = await supabase.storage
                         .from('company-documents')
-                        .list(folderName, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+                        .list(folderName, { limit: 100, sortBy: { column: 'name', order: 'asc' } });
+
+                    if (error || !data) {
+                        setSubfolders([]);
+                        return;
+                    }
+
+                    // Filter for folders (items with id: null)
+                    const folders = data.filter(item => item.id === null && item.name !== '.keep');
+                    setSubfolders(folders.map(f => f.name));
+                } catch (error) {
+                    console.error('Error loading subfolders:', error);
+                    setSubfolders([]);
+                }
+            };
+
+            // Load documents from Supabase
+            const loadDocuments = async (folderName, subfolder) => {
+                setIsLoading(true);
+                try {
+                    const listPath = subfolder ? `${folderName}/${subfolder}` : folderName;
+                    const { data, error } = await supabase.storage
+                        .from('company-documents')
+                        .list(listPath, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
 
                     if (error) {
                         console.error('Error loading files:', error);
@@ -811,19 +1172,20 @@
                         return;
                     }
 
-                    // Filter out .keep files and convert to document objects
+                    // Filter out .keep files and folders
                     const docs = data
-                        .filter(file => !file.name.endsWith('.keep'))
+                        .filter(file => !file.name.endsWith('.keep') && file.id !== null)
                         .map(file => {
                             const fileSize = file.metadata?.size || 0;
                             return {
                                 id: file.id,
                                 name: file.name,
                                 folder: folderName,
+                                subfolder: subfolder || null,
                                 fileType: getFileType(file.name),
                                 fileSize: fileSize,
                                 uploadDate: file.created_at,
-                                path: `${folderName}/${file.name}`
+                                path: subfolder ? `${folderName}/${subfolder}/${file.name}` : `${folderName}/${file.name}`
                             };
                         });
 
@@ -848,15 +1210,59 @@
                 setTheme(prevTheme => prevTheme === 'dark' ? 'light' : 'dark');
             };
 
+            // Load activity log
+            const loadActivityLog = async () => {
+                try {
+                    const { data } = await supabase.storage
+                        .from('company-documents')
+                        .download('_audit/audit-log.json');
+
+                    if (data) {
+                        const text = await data.text();
+                        const log = JSON.parse(text);
+                        setAuditLog(log.slice(0, 100)); // Show last 100
+                    } else {
+                        setAuditLog([]);
+                    }
+                } catch (error) {
+                    console.error('Error loading audit log:', error);
+                    setAuditLog([]);
+                }
+            };
+
+            // Open activity log drawer
+            const openActivityLog = async () => {
+                setShowActivityLog(true);
+                await loadActivityLog();
+            };
+
             // Filter documents
             const filteredDocuments = documents.filter(doc => {
                 const searchMatch = !searchTerm || doc.name.toLowerCase().includes(searchTerm.toLowerCase());
                 return searchMatch;
             });
 
-            // Get folder document count
+            // Get folder document count (including subfolders)
             const getFolderCount = (folder) => {
                 return documents.filter(doc => doc.folder === folder).length;
+            };
+
+            // Get subfolder document count
+            const getSubfolderCount = (folder, subfolder) => {
+                return documents.filter(doc => doc.folder === folder && doc.subfolder === subfolder).length;
+            };
+
+            // Get action icon for audit entry
+            const getAuditIcon = (action) => {
+                const icons = {
+                    'upload': '📤',
+                    'rename': '✏️',
+                    'delete': '🗑️',
+                    'move': '➡️',
+                    'folder_created': '📁',
+                    'subfolder_created': '📂'
+                };
+                return icons[action] || '📋';
             };
 
             // Handle file upload
@@ -869,14 +1275,17 @@
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
 
-                    if (file.size > 50 * 1024 * 1024) { // 50MB limit for cloud storage
+                    if (file.size > 50 * 1024 * 1024) { // 50MB limit
                         showToast(`File "${file.name}" exceeds 50MB limit`, 'error');
                         continue;
                     }
 
                     try {
                         const timestamp = Date.now();
-                        const filePath = `${selectedFolder}/${timestamp}_${file.name}`;
+                        const basePath = selectedSubfolder
+                            ? `${selectedFolder}/${selectedSubfolder}`
+                            : selectedFolder;
+                        const filePath = `${basePath}/${timestamp}_${file.name}`;
 
                         const { data, error } = await supabase.storage
                             .from('company-documents')
@@ -890,6 +1299,8 @@
                             showToast(`Failed to upload "${file.name}"`, 'error');
                         } else {
                             uploadedCount++;
+                            const folder = selectedSubfolder ? `${selectedFolder}/${selectedSubfolder}` : selectedFolder;
+                            await logAudit('upload', `Uploaded '${file.name}' to ${folder}`, file.name, folder);
                             setUploadProgress(Math.round(((i + 1) / files.length) * 100));
                         }
                     } catch (error) {
@@ -905,13 +1316,13 @@
                     setShowUploadProgress(false);
                     setUploadProgress(0);
                     setIsUploading(false);
-                    loadDocuments(selectedFolder);
+                    loadDocuments(selectedFolder, selectedSubfolder);
 
                     if (uploadedCount > 0) {
                         showToast(`Successfully uploaded ${uploadedCount} file(s)`, 'success');
                     }
                 }, 1500);
-            }, [selectedFolder]);
+            }, [selectedFolder, selectedSubfolder]);
 
             // Handle drag and drop
             const handleDragOver = (e) => {
@@ -959,7 +1370,7 @@
             };
 
             // Delete document
-            const deleteDocument = async (id, path) => {
+            const deleteDocument = async (id, path, fileName, folder) => {
                 if (!confirm('Are you sure you want to delete this document?')) return;
 
                 try {
@@ -971,8 +1382,8 @@
                         console.error('Delete error:', error);
                         showToast('Failed to delete file', 'error');
                     } else {
+                        await logAudit('delete', `Deleted '${fileName}' from ${folder}`, fileName, folder);
                         showToast('Document deleted successfully', 'success');
-                        // Remove from local notes storage
                         localStorage.removeItem(`mt-doc-notes-${path}`);
                         setDocuments(prev => prev.filter(doc => doc.id !== id));
                     }
@@ -990,7 +1401,6 @@
                 }
 
                 try {
-                    // Create .keep file to initialize folder in Supabase
                     const { error } = await supabase.storage
                         .from('company-documents')
                         .upload(`${folderName}/.keep`, new Blob(['']), {
@@ -1004,11 +1414,47 @@
                     } else {
                         setFolders(prev => [...prev, folderName]);
                         setShowCreateFolder(false);
+                        await logAudit('folder_created', `Created folder '${folderName}'`, null, folderName);
                         showToast('Folder created successfully', 'success');
                     }
                 } catch (error) {
                     console.error('Folder creation exception:', error);
                     showToast('Failed to create folder', 'error');
+                }
+            };
+
+            // Create subfolder
+            const createSubfolder = async (subfolderName) => {
+                if (!subfolderName.trim()) {
+                    showToast('Subfolder name is invalid', 'error');
+                    return;
+                }
+
+                if (subfolders.includes(subfolderName)) {
+                    showToast('Subfolder already exists', 'error');
+                    return;
+                }
+
+                try {
+                    const { error } = await supabase.storage
+                        .from('company-documents')
+                        .upload(`${selectedFolder}/${subfolderName}/.keep`, new Blob(['']), {
+                            cacheControl: '3600',
+                            upsert: true
+                        });
+
+                    if (error) {
+                        console.error('Subfolder creation error:', error);
+                        showToast('Failed to create subfolder', 'error');
+                    } else {
+                        setShowCreateSubfolder(false);
+                        await logAudit('subfolder_created', `Created subfolder '${selectedFolder}/${subfolderName}'`, null, `${selectedFolder}/${subfolderName}`);
+                        showToast('Subfolder created successfully', 'success');
+                        loadSubfolders(selectedFolder);
+                    }
+                } catch (error) {
+                    console.error('Subfolder creation exception:', error);
+                    showToast('Failed to create subfolder', 'error');
                 }
             };
 
@@ -1025,6 +1471,8 @@
                         console.error('Move error:', error);
                         showToast('Failed to move file', 'error');
                     } else {
+                        const fileName = oldPath.split('/').pop();
+                        await logAudit('move', `Moved '${fileName}' from ${documents.find(d => d.id === docId)?.folder} to ${newFolder}`, fileName, newFolder);
                         setDocuments(prev =>
                             prev.map(doc =>
                                 doc.id === docId ? { ...doc, folder: newFolder, path: newPath } : doc
@@ -1039,7 +1487,7 @@
                 }
             };
 
-            // Update notes (stored in localStorage with path key)
+            // Update notes
             const updateNotes = (docPath) => {
                 localStorage.setItem(`mt-doc-notes-${docPath}`, noteText);
                 setShowNotes(null);
@@ -1060,10 +1508,12 @@
                 }
 
                 try {
-                    const folder = oldPath.split('/')[0];
-                    const oldFileName = oldPath.split('/').pop().split('_').slice(1).join('_'); // Remove timestamp
+                    const pathParts = oldPath.split('/');
+                    const fileName = pathParts[pathParts.length - 1];
+                    const folder = pathParts[0];
+                    const timestamp = fileName.split('_')[0];
                     const newFileName = renameText.trim();
-                    const newPath = `${folder}/${oldPath.split('/')[1].split('_')[0]}_${newFileName}`;
+                    const newPath = oldPath.substring(0, oldPath.lastIndexOf('/') + 1) + timestamp + '_' + newFileName;
 
                     const { error } = await supabase.storage
                         .from('company-documents')
@@ -1073,13 +1523,13 @@
                         console.error('Rename error:', error);
                         showToast('Failed to rename file', 'error');
                     } else {
-                        // Move notes to new path
                         const oldNotes = localStorage.getItem(`mt-doc-notes-${oldPath}`);
                         if (oldNotes) {
                             localStorage.removeItem(`mt-doc-notes-${oldPath}`);
                             localStorage.setItem(`mt-doc-notes-${newPath}`, oldNotes);
                         }
 
+                        await logAudit('rename', `Renamed '${fileName}' to '${timestamp}_${newFileName}'`, newFileName, folder);
                         setDocuments(prev =>
                             prev.map(doc =>
                                 doc.id === docId ? { ...doc, name: newFileName, path: newPath } : doc
@@ -1095,6 +1545,14 @@
                 }
             };
 
+            // Toggle folder expansion
+            const toggleFolderExpand = (folder) => {
+                setExpandedFolders(prev => ({
+                    ...prev,
+                    [folder]: !prev[folder]
+                }));
+            };
+
             return (
                 <>
                     {/* Header */}
@@ -1108,6 +1566,9 @@
                             <div className="header-title">Document Storage</div>
                         </div>
                         <div className="header-right">
+                            <button className="activity-log-btn" onClick={openActivityLog} title="Activity Log">
+                                📋 Activity Log
+                            </button>
                             <button className="theme-toggle" onClick={toggleTheme} title="Toggle theme">
                                 {theme === 'dark' ? '☀️' : '🌙'}
                             </button>
@@ -1132,13 +1593,41 @@
                                 <div className="folder-title">📁 Folders</div>
                                 <ul className="folder-list">
                                     {folders.map(folder => (
-                                        <li
-                                            key={folder}
-                                            className={`folder-item ${selectedFolder === folder ? 'active' : ''}`}
-                                            onClick={() => setSelectedFolder(folder)}
-                                        >
-                                            <span>{folder}</span>
-                                            <span className="folder-count">({getFolderCount(folder)})</span>
+                                        <li key={folder}>
+                                            <div
+                                                className={`folder-item ${selectedFolder === folder && !selectedSubfolder ? 'active' : ''}`}
+                                                onClick={() => {
+                                                    setSelectedFolder(folder);
+                                                    setSelectedSubfolder(null);
+                                                }}
+                                            >
+                                                <div className="folder-item-left">
+                                                    <button
+                                                        className="folder-expand-toggle"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleFolderExpand(folder);
+                                                        }}
+                                                    >
+                                                        {expandedFolders[folder] ? '▼' : '▶'}
+                                                    </button>
+                                                    <span className="folder-name">{folder}</span>
+                                                </div>
+                                                <span className="folder-count">({getFolderCount(folder)})</span>
+                                            </div>
+                                            {expandedFolders[folder] && selectedFolder === folder && subfolders.length > 0 && (
+                                                <ul className="subfolder-list">
+                                                    {subfolders.map(subfolder => (
+                                                        <li
+                                                            key={subfolder}
+                                                            className={`subfolder-item ${selectedSubfolder === subfolder ? 'active' : ''}`}
+                                                            onClick={() => setSelectedSubfolder(subfolder)}
+                                                        >
+                                                            📂 {subfolder} ({getSubfolderCount(folder, subfolder)})
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            )}
                                         </li>
                                     ))}
                                 </ul>
@@ -1151,7 +1640,20 @@
                         {/* Content Area */}
                         <div className="content">
                             <div className="content-header">
-                                <h2 style={{ color: 'var(--text-heading)' }}>{selectedFolder}</h2>
+                                <div className="content-title-section">
+                                    <h2 style={{ color: 'var(--text-heading)' }}>
+                                        {selectedSubfolder ? `${selectedFolder} / ${selectedSubfolder}` : selectedFolder}
+                                    </h2>
+                                    {selectedSubfolder && (
+                                        <div className="breadcrumb">
+                                            <span onClick={() => setSelectedSubfolder(null)} style={{ cursor: 'pointer', color: 'var(--accent-orange)' }}>
+                                                {selectedFolder}
+                                            </span>
+                                            <span>/</span>
+                                            <span>{selectedSubfolder}</span>
+                                        </div>
+                                    )}
+                                </div>
                                 <input
                                     type="text"
                                     className="search-box"
@@ -1167,6 +1669,38 @@
                                 onDragLeave={handleDragLeave}
                                 onDrop={handleDrop}
                             >
+                                {selectedSubfolder === null && subfolders.length > 0 && (
+                                    <div className="subfolders-section">
+                                        <div className="subfolders-header">
+                                            Subfolders
+                                            <button className="add-subfolder-btn" onClick={() => setShowCreateSubfolder(true)}>
+                                                + New Subfolder
+                                            </button>
+                                        </div>
+                                        <div className="subfolders-grid">
+                                            {subfolders.map(subfolder => (
+                                                <div
+                                                    key={subfolder}
+                                                    className="subfolder-card"
+                                                    onClick={() => setSelectedSubfolder(subfolder)}
+                                                >
+                                                    <div className="subfolder-card-icon">📂</div>
+                                                    <div className="subfolder-card-name">{subfolder}</div>
+                                                    <div className="subfolder-card-count">
+                                                        {getSubfolderCount(selectedFolder, subfolder)} file{getSubfolderCount(selectedFolder, subfolder) !== 1 ? 's' : ''}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {selectedSubfolder === null && subfolders.length === 0 && (
+                                    <button className="add-subfolder-btn" onClick={() => setShowCreateSubfolder(true)} style={{ alignSelf: 'flex-start', marginBottom: '2rem' }}>
+                                        + New Subfolder
+                                    </button>
+                                )}
+
                                 {filteredDocuments.length === 0 ? (
                                     <div
                                         className="upload-section"
@@ -1227,7 +1761,7 @@
                                                     </button>
                                                     <button
                                                         className="icon-btn delete"
-                                                        onClick={() => deleteDocument(doc.id, doc.path)}
+                                                        onClick={() => deleteDocument(doc.id, doc.path, doc.name, doc.subfolder ? `${doc.folder}/${doc.subfolder}` : doc.folder)}
                                                         title="Delete"
                                                     >
                                                         🗑️
@@ -1246,6 +1780,32 @@
                                     onChange={(e) => handleFileUpload(e.target.files)}
                                 />
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Activity Log Drawer */}
+                    <div className={`drawer-overlay ${showActivityLog ? 'open' : ''}`} onClick={() => setShowActivityLog(false)}></div>
+                    <div className={`activity-drawer ${showActivityLog ? 'open' : ''}`}>
+                        <div className="drawer-header">
+                            <div className="drawer-title">Activity Log</div>
+                            <button className="drawer-close-btn" onClick={() => setShowActivityLog(false)}>✕</button>
+                        </div>
+                        <div className="drawer-content">
+                            {auditLog.length === 0 ? (
+                                <div style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: '2rem' }}>
+                                    No activity recorded yet
+                                </div>
+                            ) : (
+                                auditLog.map(entry => (
+                                    <div key={entry.id} className="audit-entry">
+                                        <div className="audit-icon">{getAuditIcon(entry.action)}</div>
+                                        <div className="audit-details">
+                                            <div className="audit-description">{entry.details}</div>
+                                            <div className="audit-time">{getRelativeTime(entry.timestamp)}</div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
 
@@ -1275,6 +1835,41 @@
                                         onClick={() => {
                                             const input = document.getElementById('folderInput');
                                             createFolder(input.value);
+                                        }}
+                                    >
+                                        Create
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Create Subfolder Modal */}
+                    {showCreateSubfolder && (
+                        <div className="modal-overlay" onClick={() => setShowCreateSubfolder(false)}>
+                            <div className="modal" onClick={(e) => e.stopPropagation()}>
+                                <div className="modal-title">Create New Subfolder</div>
+                                <input
+                                    type="text"
+                                    className="modal-input"
+                                    placeholder="Subfolder name"
+                                    onKeyPress={(e) => {
+                                        if (e.key === 'Enter') {
+                                            createSubfolder(e.target.value);
+                                        }
+                                    }}
+                                    autoFocus
+                                    id="subfolderInput"
+                                />
+                                <div className="modal-buttons">
+                                    <button className="btn btn-secondary" onClick={() => setShowCreateSubfolder(false)}>
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="btn btn-primary"
+                                        onClick={() => {
+                                            const input = document.getElementById('subfolderInput');
+                                            createSubfolder(input.value);
                                         }}
                                     >
                                         Create
