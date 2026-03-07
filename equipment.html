@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Equipment Tracker - Master Touch Outdoor Living</title>
+
+  <!-- React & ReactDOM from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #0C2637;
+      --card-bg-flat: #133A4F;
+      --border: #1A4D65;
+      --text: #E0EDEE;
+      --text-heading: #FFFFFF;
+      --text-muted: #8AACB8;
+      --orange: #F47920;
+      --teal: #00BCC8;
+    }
+
+    [data-theme="light"] {
+      --bg: #EFF3F5;
+      --card-bg-flat: #FFFFFF;
+      --border: #D0DBE0;
+      --text: #2A3F4D;
+      --text-heading: #132B3A;
+      --text-muted: #5A7585;
+      --orange: #E06A10;
+      --teal: #00919B;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body, #root {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Header */
+    .header {
+      background-color: var(--card-bg-flat);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .mt-logo {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mt-logo svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-heading);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .theme-toggle {
+      background: var(--border);
+      border: none;
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--teal);
+    }
+
+    .back-link {
+      color: var(--teal);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--orange);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Summary Cards */
+    .summary-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .summary-card {
+      background-color: var(--card-bg-flat);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .summary-card-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin: 0.5rem 0;
+    }
+
+    .summary-card-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Filters Bar */
+    .filters-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .filter-group label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    select, input {
+      background-color: var(--card-bg-flat);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--teal);
+      background-color: var(--card-bg-flat);
+    }
+
+    .button {
+      background-color: var(--orange);
+      border: none;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+
+    .button:hover {
+      background-color: #D65A0A;
+    }
+
+    .button-secondary {
+      background-color: var(--border);
+      color: var(--text);
+    }
+
+    .button-secondary:hover {
+      background-color: var(--teal);
+    }
+
+    .button-danger {
+      background-color: #C1272D;
+    }
+
+    .button-danger:hover {
+      background-color: #A01F25;
+    }
+
+    /* Equipment Grid */
+    .equipment-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .equipment-card {
+      background-color: var(--card-bg-flat);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .equipment-card:hover {
+      border-color: var(--teal);
+      box-shadow: 0 2px 8px rgba(0, 188, 200, 0.1);
+    }
+
+    .equipment-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+    }
+
+    .equipment-icon {
+      font-size: 2rem;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.4rem 0.8rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-available {
+      background-color: #2ECC71;
+      color: white;
+    }
+
+    .status-in-use {
+      background-color: #3498DB;
+      color: white;
+    }
+
+    .status-maintenance {
+      background-color: #F39C12;
+      color: white;
+    }
+
+    .status-out-of-service {
+      background-color: #E74C3C;
+      color: white;
+    }
+
+    .equipment-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 0.5rem;
+    }
+
+    .equipment-detail {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0.4rem 0;
+    }
+
+    .equipment-detail-label {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .condition-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 0.4rem;
+      vertical-align: middle;
+    }
+
+    .condition-excellent { background-color: #2ECC71; }
+    .condition-good { background-color: #F1C40F; }
+    .condition-fair { background-color: #F39C12; }
+    .condition-poor { background-color: #E74C3C; }
+
+    .maintenance-warning {
+      background-color: rgba(231, 76, 60, 0.1);
+      border-left: 3px solid #E74C3C;
+      padding: 0.5rem 0.8rem;
+      margin-top: 0.8rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      color: #E74C3C;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal {
+      background-color: var(--card-bg-flat);
+      border-radius: 8px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+    }
+
+    .modal-header {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-heading);
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .form-buttons button {
+      flex: 1;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--teal);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 0.8s linear infinite;
+      margin: 2rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Utility Actions */
+    .utility-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Supabase client
+    const supabaseUrl = 'https://jpieratyhqxkwbjzcjqk.supabase.co';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwaWVyYXR5aHF4a3dianpjanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDY3NzIsImV4cCI6MjA4ODQyMjc3Mn0.Dr0IDpWxWy8hHIKwlckDWvFNx6gmzQghhbqQgy4jRiI';
+    const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+    // Helper: Generate UUID
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Helper: Check if maintenance is due
+    function isMaintenanceDue(maintenanceDueDate) {
+      if (!maintenanceDueDate) return false;
+      const dueDate = new Date(maintenanceDueDate);
+      const today = new Date();
+      const sevenDaysFromNow = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+      return dueDate <= sevenDaysFromNow;
+    }
+
+    // Helper: Format date
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    // Category icons
+    const categoryIcons = {
+      'Vehicles': '🚚',
+      'Heavy Equipment': '🏗️',
+      'Power Tools': '⚙️',
+      'Hand Tools': '🔨',
+      'Materials': '📦',
+      'Safety Equipment': '🦺'
+    };
+
+    // Sample data
+    const sampleEquipment = [
+      {
+        id: generateUUID(),
+        name: 'Ford F-250 Work Truck',
+        category: 'Vehicles',
+        status: 'Available',
+        assignedTo: 'Unassigned',
+        location: 'Warehouse',
+        condition: 'Excellent',
+        purchaseDate: '2021-06-15',
+        maintenanceDueDate: null,
+        lastMaintenanceDate: '2026-02-01',
+        serialNumber: 'FD1234567890',
+        cost: 45000,
+        notes: 'Primary work truck, well maintained'
+      },
+      {
+        id: generateUUID(),
+        name: 'CAT 320 Excavator',
+        category: 'Heavy Equipment',
+        status: 'In Use',
+        assignedTo: 'Job Site - Johnson Pool',
+        location: 'Job Site - Johnson Pool',
+        condition: 'Good',
+        purchaseDate: '2018-03-20',
+        maintenanceDueDate: '2026-03-20',
+        lastMaintenanceDate: '2025-12-15',
+        serialNumber: 'CAT320-5678',
+        cost: 125000,
+        notes: 'Currently on Johnson Pool project'
+      },
+      {
+        id: generateUUID(),
+        name: 'DeWalt 20V Drill Kit',
+        category: 'Power Tools',
+        status: 'Available',
+        assignedTo: 'Unassigned',
+        location: 'Warehouse',
+        condition: 'Good',
+        purchaseDate: '2023-05-10',
+        maintenanceDueDate: null,
+        lastMaintenanceDate: '2026-01-10',
+        serialNumber: 'DW20V-1122',
+        cost: 199,
+        notes: 'Complete kit with batteries and charger'
+      },
+      {
+        id: generateUUID(),
+        name: 'Husqvarna Concrete Saw',
+        category: 'Power Tools',
+        status: 'Maintenance',
+        assignedTo: 'Unassigned',
+        location: 'Warehouse',
+        condition: 'Fair',
+        purchaseDate: '2020-08-12',
+        maintenanceDueDate: '2026-03-05',
+        lastMaintenanceDate: '2025-09-01',
+        serialNumber: 'HUS-CS-3344',
+        cost: 2500,
+        notes: 'Needs blade replacement and service'
+      }
+    ];
+
+    // Main App Component
+    function EquipmentTracker() {
+      const [equipment, setEquipment] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [theme, setTheme] = useState(() => localStorage.getItem('mt-theme') || 'dark');
+      const [selectedEquipment, setSelectedEquipment] = useState(null);
+      const [isFormOpen, setIsFormOpen] = useState(false);
+      const [filters, setFilters] = useState({
+        category: 'All',
+        status: 'All',
+        search: ''
+      });
+
+      // Initialize theme
+      useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('mt-theme', theme);
+      }, [theme]);
+
+      // Load equipment from Supabase Storage
+      useEffect(() => {
+        loadEquipment();
+      }, []);
+
+      async function loadEquipment() {
+        try {
+          setLoading(true);
+          // Try to load from Supabase Storage
+          const { data, error } = await supabase.storage
+            .from('company-documents')
+            .download('equipment-data/equipment.json');
+
+          if (error || !data) {
+            // No file exists, use sample data
+            setEquipment(sampleEquipment);
+            await saveEquipment(sampleEquipment);
+          } else {
+            const text = await data.text();
+            const loaded = JSON.parse(text);
+            setEquipment(loaded);
+          }
+        } catch (err) {
+          console.log('Using sample data');
+          setEquipment(sampleEquipment);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      async function saveEquipment(data) {
+        try {
+          const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+          await supabase.storage
+            .from('company-documents')
+            .upload('equipment-data/equipment.json', blob, { upsert: true });
+        } catch (err) {
+          console.error('Error saving equipment:', err);
+        }
+      }
+
+      function toggleTheme() {
+        setTheme(theme === 'dark' ? 'light' : 'dark');
+      }
+
+      function handleAddEquipment(newEquipment) {
+        const updated = [...equipment, newEquipment];
+        setEquipment(updated);
+        saveEquipment(updated);
+        setIsFormOpen(false);
+      }
+
+      function handleUpdateEquipment(updatedEquipment) {
+        const updated = equipment.map(e => e.id === updatedEquipment.id ? updatedEquipment : e);
+        setEquipment(updated);
+        saveEquipment(updated);
+        setSelectedEquipment(null);
+        setIsFormOpen(false);
+      }
+
+      function handleDeleteEquipment(id) {
+        const updated = equipment.filter(e => e.id !== id);
+        setEquipment(updated);
+        saveEquipment(updated);
+        setSelectedEquipment(null);
+        setIsFormOpen(false);
+      }
+
+      function handleExport() {
+        const dataStr = JSON.stringify(equipment, null, 2);
+        const blob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `equipment-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function handleImport(event) {
+        const file = event.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const imported = JSON.parse(e.target.result);
+            if (Array.isArray(imported)) {
+              setEquipment(imported);
+              saveEquipment(imported);
+              alert('Equipment data imported successfully!');
+            }
+          } catch (err) {
+            alert('Invalid JSON file');
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // Filter equipment
+      const filtered = equipment.filter(item => {
+        const matchCategory = filters.category === 'All' || item.category === filters.category;
+        const matchStatus = filters.status === 'All' || item.status === filters.status;
+        const matchSearch = item.name.toLowerCase().includes(filters.search.toLowerCase());
+        return matchCategory && matchStatus && matchSearch;
+      });
+
+      // Calculate summary stats
+      const totalItems = equipment.length;
+      const available = equipment.filter(e => e.status === 'Available').length;
+      const inUse = equipment.filter(e => e.status === 'In Use').length;
+      const maintenanceDue = equipment.filter(e => isMaintenanceDue(e.maintenanceDueDate)).length;
+
+      return (
+        <>
+          <header className="header">
+            <div className="header-left">
+              <div className="mt-logo">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="100" height="100" fill="currentColor" opacity="0.1" rx="8"/>
+                  <path d="M50 20L80 80H20L50 20Z" stroke="currentColor" strokeWidth="3" fill="none"/>
+                  <circle cx="50" cy="55" r="8" fill="currentColor"/>
+                </svg>
+              </div>
+              <h1 className="header-title">Equipment Tracker</h1>
+            </div>
+            <div className="header-right">
+              <button className="theme-toggle" onClick={toggleTheme}>
+                {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+              </button>
+              <a href="../index.html" className="back-link">← Back to Hub</a>
+            </div>
+          </header>
+
+          <div className="container">
+            {loading ? (
+              <div className="loading-container">
+                <div className="spinner"></div>
+              </div>
+            ) : (
+              <>
+                {/* Summary Cards */}
+                <div className="summary-row">
+                  <div className="summary-card">
+                    <div className="summary-card-label">Total Items</div>
+                    <div className="summary-card-value">{totalItems}</div>
+                  </div>
+                  <div className="summary-card">
+                    <div className="summary-card-label">Available</div>
+                    <div className="summary-card-value">{available}</div>
+                  </div>
+                  <div className="summary-card">
+                    <div className="summary-card-label">In Use</div>
+                    <div className="summary-card-value">{inUse}</div>
+                  </div>
+                  <div className="summary-card">
+                    <div className="summary-card-label">Maintenance Due</div>
+                    <div className="summary-card-value">{maintenanceDue}</div>
+                  </div>
+                </div>
+
+                {/* Utility Buttons */}
+                <div className="utility-buttons">
+                  <button className="button" onClick={() => { setSelectedEquipment(null); setIsFormOpen(true); }}>
+                    + Add Equipment
+                  </button>
+                  <button className="button button-secondary" onClick={handleExport}>
+                    📥 Export JSON
+                  </button>
+                  <label className="button button-secondary" style={{ marginBottom: 0, cursor: 'pointer' }}>
+                    📤 Import JSON
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={handleImport}
+                      style={{ display: 'none' }}
+                    />
+                  </label>
+                </div>
+
+                {/* Filters Bar */}
+                <div className="filters-bar">
+                  <div className="filter-group">
+                    <label>Category:</label>
+                    <select
+                      value={filters.category}
+                      onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                    >
+                      <option>All</option>
+                      {Object.keys(categoryIcons).map(cat => (
+                        <option key={cat}>{cat}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="filter-group">
+                    <label>Status:</label>
+                    <select
+                      value={filters.status}
+                      onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                    >
+                      <option>All</option>
+                      <option>Available</option>
+                      <option>In Use</option>
+                      <option>Maintenance</option>
+                      <option>Out of Service</option>
+                    </select>
+                  </div>
+                  <div className="filter-group">
+                    <input
+                      type="text"
+                      placeholder="Search equipment..."
+                      value={filters.search}
+                      onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+                      style={{ flex: 1, minWidth: '200px' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Equipment Grid */}
+                {filtered.length === 0 ? (
+                  <div className="empty-state">
+                    <div className="empty-state-icon">📭</div>
+                    <div className="empty-state-text">No equipment found matching your filters.</div>
+                    <button className="button" onClick={() => { setSelectedEquipment(null); setIsFormOpen(true); }}>
+                      Add First Equipment
+                    </button>
+                  </div>
+                ) : (
+                  <div className="equipment-grid">
+                    {filtered.map(item => {
+                      const isOverdue = item.maintenanceDueDate && new Date(item.maintenanceDueDate) < new Date();
+                      return (
+                        <div
+                          key={item.id}
+                          className="equipment-card"
+                          onClick={() => { setSelectedEquipment(item); setIsFormOpen(true); }}
+                        >
+                          <div className="equipment-card-header">
+                            <div className="equipment-icon">{categoryIcons[item.category] || '📦'}</div>
+                            <span className={`status-badge status-${item.status.toLowerCase().replace(' ', '-')}`}>
+                              {item.status}
+                            </span>
+                          </div>
+                          <div className="equipment-name">{item.name}</div>
+                          <div className="equipment-detail">
+                            <span className="equipment-detail-label">Assigned:</span> {item.assignedTo}
+                          </div>
+                          <div className="equipment-detail">
+                            <span className="equipment-detail-label">Location:</span> {item.location}
+                          </div>
+                          <div className="equipment-detail">
+                            <span className="condition-dot" className={`condition-${item.condition.toLowerCase()}`}></span>
+                            <span className="equipment-detail-label">Condition:</span> {item.condition}
+                          </div>
+                          {item.maintenanceDueDate && (
+                            <div className="equipment-detail">
+                              <span className="equipment-detail-label">Maintenance:</span> {formatDate(item.maintenanceDueDate)}
+                            </div>
+                          )}
+                          {isOverdue && (
+                            <div className="maintenance-warning">⚠️ Maintenance overdue!</div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Form Modal */}
+          {isFormOpen && (
+            <EquipmentForm
+              equipment={selectedEquipment}
+              onSave={selectedEquipment ? handleUpdateEquipment : handleAddEquipment}
+              onDelete={selectedEquipment ? handleDeleteEquipment : null}
+              onClose={() => { setIsFormOpen(false); setSelectedEquipment(null); }}
+            />
+          )}
+        </>
+      );
+    }
+
+    // Equipment Form Component
+    function EquipmentForm({ equipment, onSave, onDelete, onClose }) {
+      const [formData, setFormData] = useState(
+        equipment || {
+          id: generateUUID(),
+          name: '',
+          category: 'Vehicles',
+          status: 'Available',
+          assignedTo: 'Unassigned',
+          location: 'Warehouse',
+          condition: 'Good',
+          purchaseDate: '',
+          maintenanceDueDate: '',
+          lastMaintenanceDate: '',
+          serialNumber: '',
+          cost: '',
+          notes: ''
+        }
+      );
+
+      function handleChange(e) {
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+      }
+
+      function handleSubmit(e) {
+        e.preventDefault();
+        if (!formData.name.trim()) {
+          alert('Equipment name is required');
+          return;
+        }
+        onSave(formData);
+      }
+
+      return (
+        <div className="modal-overlay" onClick={onClose}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <span>{equipment ? 'Edit Equipment' : 'Add Equipment'}</span>
+              <button className="modal-close" onClick={onClose}>✕</button>
+            </div>
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label>Equipment Name *</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Category</label>
+                <select name="category" value={formData.category} onChange={handleChange}>
+                  <option>Vehicles</option>
+                  <option>Heavy Equipment</option>
+                  <option>Power Tools</option>
+                  <option>Hand Tools</option>
+                  <option>Materials</option>
+                  <option>Safety Equipment</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Status</label>
+                <select name="status" value={formData.status} onChange={handleChange}>
+                  <option>Available</option>
+                  <option>In Use</option>
+                  <option>Maintenance</option>
+                  <option>Out of Service</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Assigned To</label>
+                <input
+                  type="text"
+                  name="assignedTo"
+                  value={formData.assignedTo}
+                  onChange={handleChange}
+                  placeholder="Employee name or Unassigned"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  placeholder="Warehouse, Job Site, etc."
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Condition</label>
+                <select name="condition" value={formData.condition} onChange={handleChange}>
+                  <option>Excellent</option>
+                  <option>Good</option>
+                  <option>Fair</option>
+                  <option>Poor</option>
+                </select>
+              </div>
+
+              <div className="form-group">
+                <label>Purchase Date</label>
+                <input
+                  type="date"
+                  name="purchaseDate"
+                  value={formData.purchaseDate}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Maintenance Due Date</label>
+                <input
+                  type="date"
+                  name="maintenanceDueDate"
+                  value={formData.maintenanceDueDate}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Last Maintenance Date</label>
+                <input
+                  type="date"
+                  name="lastMaintenanceDate"
+                  value={formData.lastMaintenanceDate}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Serial Number</label>
+                <input
+                  type="text"
+                  name="serialNumber"
+                  value={formData.serialNumber}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Cost ($)</label>
+                <input
+                  type="number"
+                  name="cost"
+                  value={formData.cost}
+                  onChange={handleChange}
+                  step="0.01"
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Notes</label>
+                <textarea
+                  name="notes"
+                  value={formData.notes}
+                  onChange={handleChange}
+                  placeholder="Additional information..."
+                />
+              </div>
+
+              <div className="form-buttons">
+                <button type="submit" className="button">
+                  {equipment ? 'Update Equipment' : 'Add Equipment'}
+                </button>
+                {onDelete && (
+                  <button
+                    type="button"
+                    className="button button-danger"
+                    onClick={() => {
+                      if (confirm('Are you sure you want to delete this equipment?')) {
+                        onDelete(equipment.id);
+                      }
+                    }}
+                  >
+                    Delete
+                  </button>
+                )}
+                <button type="button" className="button button-secondary" onClick={onClose}>
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      );
+    }
+
+    // Render app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<EquipmentTracker />);
+  </script>
+</body>
+</html>
