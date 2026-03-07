@@ -478,6 +478,43 @@
     const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwaWVyYXR5aHF4a3dianpjanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDY3NzIsImV4cCI6MjA4ODQyMjc3Mn0.Dr0IDpWxWy8hHIKwlckDWvFNx6gmzQghhbqQgy4jRiI';
     const supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
 
+    // System audit logging function
+    async function logSystemAudit(tool, action, details, itemName, category) {
+      try {
+        let log = [];
+        try {
+          const { data } = await supabase.storage
+            .from('company-documents')
+            .download('_audit/system-audit-log.json');
+          if (data) {
+            const text = await data.text();
+            log = JSON.parse(text);
+          }
+        } catch (e) { log = []; }
+
+        const entry = {
+          id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+          tool,
+          action,
+          details,
+          itemName: itemName || null,
+          category: category || null,
+          timestamp: new Date().toISOString(),
+          user: 'System'
+        };
+
+        log.unshift(entry);
+        log = log.slice(0, 1000); // Keep last 1000 entries
+
+        const blob = new Blob([JSON.stringify(log, null, 2)], { type: 'application/json' });
+        await supabase.storage
+          .from('company-documents')
+          .upload('_audit/system-audit-log.json', blob, { upsert: true });
+      } catch (err) {
+        console.error('System audit log error:', err);
+      }
+    }
+
     // Helper: Generate UUID
     function generateUUID() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -644,6 +681,7 @@
         const updated = [...equipment, newEquipment];
         setEquipment(updated);
         saveEquipment(updated);
+        logSystemAudit('equipment', 'add', `Added new equipment '${newEquipment.name}'`, newEquipment.name, newEquipment.category);
         setIsFormOpen(false);
       }
 
@@ -651,14 +689,19 @@
         const updated = equipment.map(e => e.id === updatedEquipment.id ? updatedEquipment : e);
         setEquipment(updated);
         saveEquipment(updated);
+        logSystemAudit('equipment', 'edit', `Updated equipment '${updatedEquipment.name}'`, updatedEquipment.name, updatedEquipment.category);
         setSelectedEquipment(null);
         setIsFormOpen(false);
       }
 
       function handleDeleteEquipment(id) {
+        const deleted = equipment.find(e => e.id === id);
         const updated = equipment.filter(e => e.id !== id);
         setEquipment(updated);
         saveEquipment(updated);
+        if (deleted) {
+          logSystemAudit('equipment', 'delete', `Deleted equipment '${deleted.name}'`, deleted.name, deleted.category);
+        }
         setSelectedEquipment(null);
         setIsFormOpen(false);
       }
@@ -672,6 +715,7 @@
         link.download = `equipment-${new Date().toISOString().split('T')[0]}.json`;
         link.click();
         URL.revokeObjectURL(url);
+        logSystemAudit('equipment', 'export', `Exported ${equipment.length} equipment records`, null, null);
       }
 
       function handleImport(event) {
@@ -684,6 +728,7 @@
             if (Array.isArray(imported)) {
               setEquipment(imported);
               saveEquipment(imported);
+              logSystemAudit('equipment', 'import', `Imported ${imported.length} equipment records from ${file.name}`, null, null);
               alert('Equipment data imported successfully!');
             }
           } catch (err) {
@@ -724,7 +769,8 @@
               <button className="theme-toggle" onClick={toggleTheme}>
                 {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
               </button>
-              <a href="../index.html" className="back-link">← Back to Hub</a>
+              <a href="audit.html" className="back-link">Audit Log</a>
+              <a href="index.html" className="back-link">← Back to Hub</a>
             </div>
           </header>
 

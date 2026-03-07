@@ -105,6 +105,60 @@ end`};t.events.push(["putFont",function(l){(function(f){var c=f.font,h=f.out,B=f
 <!-- Back to Hub Button -->
 <a href="index.html" id="backToHub" style="position:fixed;top:16px;left:16px;z-index:9999;display:flex;align-items:center;gap:8px;padding:10px 18px;background:linear-gradient(135deg,#F47920,#E85D10);color:#fff;text-decoration:none;border-radius:10px;font-family:'Segoe UI',Roboto,sans-serif;font-size:14px;font-weight:600;box-shadow:0 4px 16px rgba(244,121,32,.35);transition:all .2s;border:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>Back to Hub</a>
 <script>var bth=document.getElementById('backToHub');bth.onmouseover=function(){this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 24px rgba(244,121,32,.5)'};bth.onmouseout=function(){this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(244,121,32,.35)'};</script>
+<!-- Org Chart Audit Logger -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var SB_URL='https://jpieratyhqxkwbjzcjqk.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwaWVyYXR5aHF4a3dianpjanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDY3NzIsImV4cCI6MjA4ODQyMjc3Mn0.Dr0IDpWxWy8hHIKwlckDWvFNx6gmzQghhbqQgy4jRiI';
+  var sb=window.supabase.createClient(SB_URL,SB_KEY);
+  
+  window._orgChartAudit=async function(action,details,itemName){
+    try{
+      var log=[];
+      try{
+        var r=await sb.storage.from('company-documents').download('_audit/system-audit-log.json');
+        if(r.data){var t=await r.data.text();log=JSON.parse(t);}
+      }catch(e){log=[];}
+      log.unshift({
+        id:Date.now().toString(36)+Math.random().toString(36).substr(2),
+        tool:'org-chart',action:action,details:details,
+        itemName:itemName||null,category:'Org Chart',
+        timestamp:new Date().toISOString(),user:'System'
+      });
+      log=log.slice(0,1000);
+      var blob=new Blob([JSON.stringify(log,null,2)],{type:'application/json'});
+      await sb.storage.from('company-documents').upload('_audit/system-audit-log.json',blob,{upsert:true});
+    }catch(e){console.error('Org chart audit error:',e);}
+  };
+
+  // Monitor for org chart changes by intercepting common button clicks
+  document.addEventListener('click',function(e){
+    var btn=e.target.closest('button');
+    if(!btn)return;
+    var txt=(btn.textContent||'').trim().toLowerCase();
+    var title=(btn.title||'').toLowerCase();
+    
+    // Detect add person
+    if(txt.includes('add')||title.includes('add person')||title.includes('add node')){
+      setTimeout(function(){window._orgChartAudit('add','Added a new person to the org chart',null);},500);
+    }
+    // Detect delete
+    if(txt.includes('delete')||txt.includes('remove')||title.includes('delete')){
+      setTimeout(function(){window._orgChartAudit('delete','Removed a person from the org chart',null);},500);
+    }
+    // Detect export/download
+    if(txt.includes('export')||txt.includes('download')||txt.includes('pdf')||txt.includes('png')||title.includes('export')){
+      setTimeout(function(){window._orgChartAudit('export','Exported org chart',null);},500);
+    }
+    // Detect save
+    if(txt.includes('save')||title.includes('save')){
+      setTimeout(function(){window._orgChartAudit('edit','Saved org chart changes',null);},500);
+    }
+  },true);
+})();
+</script>
+
     <div id="root"></div>
   </body>
 </html>

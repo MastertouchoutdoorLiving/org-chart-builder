@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Trail - Master Touch Outdoor Living</title>
+
+  <!-- React & ReactDOM from CDN -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone for JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #0C2637;
+      --card-bg-flat: #133A4F;
+      --border: #1A4D65;
+      --text: #E0EDEE;
+      --text-heading: #FFFFFF;
+      --text-muted: #8AACB8;
+      --orange: #F47920;
+      --teal: #00BCC8;
+    }
+
+    [data-theme="light"] {
+      --bg: #EFF3F5;
+      --card-bg-flat: #FFFFFF;
+      --border: #D0DBE0;
+      --text: #2A3F4D;
+      --text-heading: #132B3A;
+      --text-muted: #5A7585;
+      --orange: #E06A10;
+      --teal: #00919B;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body, #root {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Header */
+    .header {
+      background-color: var(--card-bg-flat);
+      border-bottom: 2px solid var(--orange);
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .mt-logo {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mt-logo svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .header-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-heading);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .theme-toggle {
+      background: var(--border);
+      border: none;
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--teal);
+    }
+
+    .back-link {
+      color: var(--teal);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--orange);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Filters Bar */
+    .filters-bar {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .filter-group label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    select, input {
+      background-color: var(--card-bg-flat);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.6rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--teal);
+      background-color: var(--card-bg-flat);
+    }
+
+    .button {
+      background-color: var(--orange);
+      border: none;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background-color 0.2s;
+    }
+
+    .button:hover {
+      background-color: #D65A0A;
+    }
+
+    .button-secondary {
+      background-color: var(--border);
+      color: var(--text);
+    }
+
+    .button-secondary:hover {
+      background-color: var(--teal);
+    }
+
+    /* Audit Log */
+    .audit-container {
+      background-color: var(--card-bg-flat);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .audit-entry {
+      display: flex;
+      padding: 1.2rem;
+      border-bottom: 1px solid var(--border);
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .audit-entry:last-child {
+      border-bottom: none;
+    }
+
+    .audit-entry:hover {
+      background-color: rgba(0, 188, 200, 0.03);
+    }
+
+    .audit-timestamp {
+      flex-shrink: 0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      min-width: 120px;
+      font-family: monospace;
+    }
+
+    .audit-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .audit-header {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .audit-badge {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .badge-documents {
+      background-color: rgba(0, 188, 200, 0.2);
+      color: var(--teal);
+    }
+
+    .badge-directory {
+      background-color: rgba(244, 121, 32, 0.2);
+      color: var(--orange);
+    }
+
+    .badge-equipment {
+      background-color: rgba(0, 188, 200, 0.2);
+      color: var(--teal);
+    }
+
+    .badge-org-chart {
+      background-color: rgba(244, 121, 32, 0.2);
+      color: var(--orange);
+    }
+
+    .audit-action {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      background-color: rgba(0, 188, 200, 0.15);
+      color: var(--text);
+    }
+
+    .audit-action.upload { background-color: rgba(46, 204, 113, 0.15); }
+    .audit-action.delete { background-color: rgba(193, 39, 45, 0.15); }
+    .audit-action.add { background-color: rgba(52, 152, 219, 0.15); }
+    .audit-action.edit { background-color: rgba(244, 121, 32, 0.15); }
+    .audit-action.export { background-color: rgba(155, 89, 182, 0.15); }
+    .audit-action.import { background-color: rgba(52, 152, 219, 0.15); }
+    .audit-action.rename { background-color: rgba(244, 121, 32, 0.15); }
+    .audit-action.move { background-color: rgba(155, 89, 182, 0.15); }
+    .audit-action.create_folder { background-color: rgba(52, 152, 219, 0.15); }
+    .audit-action.create_subfolder { background-color: rgba(52, 152, 219, 0.15); }
+
+    .audit-details {
+      font-size: 0.9rem;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .audit-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .empty-state-text {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Loading */
+    .spinner {
+      border: 3px solid var(--border);
+      border-top: 3px solid var(--teal);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 0.8s linear infinite;
+      margin: 2rem auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .pagination button {
+      background-color: var(--border);
+      border: none;
+      color: var(--text);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+
+    .pagination button:hover:not(:disabled) {
+      background-color: var(--teal);
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .pagination-info {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      align-self: center;
+    }
+
+    /* Utility Buttons */
+    .utility-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 1rem;
+      }
+
+      .header-title {
+        font-size: 1.3rem;
+      }
+
+      .container {
+        padding: 1rem;
+      }
+
+      .filters-bar {
+        flex-direction: column;
+      }
+
+      .filter-group {
+        width: 100%;
+      }
+
+      .filter-group input,
+      .filter-group select {
+        width: 100%;
+      }
+
+      .audit-entry {
+        flex-direction: column;
+      }
+
+      .audit-timestamp {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useCallback } = React;
+
+    // Supabase client
+    const supabaseUrl = 'https://jpieratyhqxkwbjzcjqk.supabase.co';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwaWVyYXR5aHF4a3dianpjanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDY3NzIsImV4cCI6MjA4ODQyMjc3Mn0.Dr0IDpWxWy8hHIKwlckDWvFNx6gmzQghhbqQgy4jRiI';
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+    // Helper: Format date
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+
+    // Helper: Format timestamp for display
+    function formatTimestamp(isoString) {
+      const date = new Date(isoString);
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+
+    // Main App Component
+    function AuditTrail() {
+      const [theme, setTheme] = useState(() => localStorage.getItem('mt-theme') || 'dark');
+      const [logs, setLogs] = useState([]);
+      const [loading, setLoading] = useState(true);
+      const [filters, setFilters] = useState({
+        tool: 'all',
+        action: 'all',
+        search: '',
+        dateStart: '',
+        dateEnd: ''
+      });
+      const [currentPage, setCurrentPage] = useState(1);
+      const ENTRIES_PER_PAGE = 50;
+
+      // Initialize theme
+      useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('mt-theme', theme);
+      }, [theme]);
+
+      // Load audit logs from Supabase
+      const loadLogs = useCallback(async () => {
+        try {
+          setLoading(true);
+          let allLogs = [];
+
+          // Load centralized system audit log
+          try {
+            const { data } = await supabase.storage
+              .from('company-documents')
+              .download('_audit/system-audit-log.json');
+            if (data) {
+              const text = await data.text();
+              allLogs = JSON.parse(text);
+            }
+          } catch (e) {
+            console.log('System audit log not found yet');
+          }
+
+          // Load documents audit log and merge
+          try {
+            const { data } = await supabase.storage
+              .from('company-documents')
+              .download('_audit/audit-log.json');
+            if (data) {
+              const text = await data.text();
+              const docLogs = JSON.parse(text);
+              // Convert old format to new format
+              const convertedDocLogs = docLogs.map(entry => ({
+                id: entry.id,
+                tool: 'documents',
+                action: entry.action,
+                details: entry.details,
+                itemName: entry.fileName || null,
+                category: entry.folder || null,
+                timestamp: entry.timestamp,
+                user: 'System'
+              }));
+              allLogs = [...convertedDocLogs, ...allLogs];
+            }
+          } catch (e) {
+            console.log('Documents audit log not found yet');
+          }
+
+          // Sort by timestamp descending
+          allLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+          setLogs(allLogs);
+          setCurrentPage(1);
+        } catch (error) {
+          console.error('Error loading audit logs:', error);
+          setLogs([]);
+        } finally {
+          setLoading(false);
+        }
+      }, []);
+
+      // Load logs on mount and every 30 seconds
+      useEffect(() => {
+        loadLogs();
+        const interval = setInterval(loadLogs, 30000);
+        return () => clearInterval(interval);
+      }, [loadLogs]);
+
+      // Filter logs
+      const filteredLogs = logs.filter(log => {
+        const matchTool = filters.tool === 'all' || log.tool === filters.tool;
+        const matchAction = filters.action === 'all' || log.action === filters.action;
+        const matchSearch = log.details.toLowerCase().includes(filters.search.toLowerCase()) ||
+                          (log.itemName && log.itemName.toLowerCase().includes(filters.search.toLowerCase()));
+
+        let matchDate = true;
+        if (filters.dateStart) {
+          const logDate = new Date(log.timestamp).toISOString().split('T')[0];
+          matchDate = matchDate && logDate >= filters.dateStart;
+        }
+        if (filters.dateEnd) {
+          const logDate = new Date(log.timestamp).toISOString().split('T')[0];
+          matchDate = matchDate && logDate <= filters.dateEnd;
+        }
+
+        return matchTool && matchAction && matchSearch && matchDate;
+      });
+
+      // Paginate
+      const paginatedLogs = filteredLogs.slice(
+        (currentPage - 1) * ENTRIES_PER_PAGE,
+        currentPage * ENTRIES_PER_PAGE
+      );
+
+      const totalPages = Math.ceil(filteredLogs.length / ENTRIES_PER_PAGE);
+
+      // Get unique action types for filter
+      const actionTypes = Array.from(new Set(logs.map(log => log.action))).sort();
+
+      // Export to CSV
+      const exportToCSV = () => {
+        const headers = ['Timestamp', 'Tool', 'Action', 'Details', 'Item Name', 'Category', 'User'];
+        const rows = filteredLogs.map(log => [
+          formatDate(log.timestamp),
+          log.tool,
+          log.action,
+          log.details,
+          log.itemName || '',
+          log.category || '',
+          log.user || 'System'
+        ]);
+
+        let csv = headers.join(',') + '\n';
+        rows.forEach(row => {
+          csv += row.map(cell => `"${(cell || '').toString().replace(/"/g, '""')}"`).join(',') + '\n';
+        });
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `audit-log-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      };
+
+      function toggleTheme() {
+        setTheme(theme === 'dark' ? 'light' : 'dark');
+      }
+
+      return (
+        <>
+          <header className="header">
+            <div className="header-left">
+              <div className="mt-logo">
+                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect width="100" height="100" fill="currentColor" opacity="0.1" rx="8"/>
+                  <path d="M50 20L80 80H20L50 20Z" stroke="currentColor" strokeWidth="3" fill="none"/>
+                  <circle cx="50" cy="55" r="8" fill="currentColor"/>
+                </svg>
+              </div>
+              <h1 className="header-title">Audit Trail</h1>
+            </div>
+            <div className="header-right">
+              <button className="theme-toggle" onClick={toggleTheme}>
+                {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
+              </button>
+              <a href="index.html" className="back-link">← Back to Hub</a>
+            </div>
+          </header>
+
+          <div className="container">
+            {/* Utility Buttons */}
+            <div className="utility-buttons">
+              <button className="button" onClick={loadLogs}>
+                🔄 Refresh
+              </button>
+              <button className="button button-secondary" onClick={exportToCSV}>
+                📥 Export CSV
+              </button>
+            </div>
+
+            {/* Filters Bar */}
+            <div className="filters-bar">
+              <div className="filter-group">
+                <label>Tool:</label>
+                <select
+                  value={filters.tool}
+                  onChange={(e) => {
+                    setFilters({ ...filters, tool: e.target.value });
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="all">All Tools</option>
+                  <option value="documents">Documents</option>
+                  <option value="directory">Directory</option>
+                  <option value="equipment">Equipment</option>
+                  <option value="org-chart">Org Chart</option>
+                </select>
+              </div>
+              <div className="filter-group">
+                <label>Action:</label>
+                <select
+                  value={filters.action}
+                  onChange={(e) => {
+                    setFilters({ ...filters, action: e.target.value });
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="all">All Actions</option>
+                  {actionTypes.map(action => (
+                    <option key={action} value={action}>
+                      {action}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="filter-group">
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={filters.search}
+                  onChange={(e) => {
+                    setFilters({ ...filters, search: e.target.value });
+                    setCurrentPage(1);
+                  }}
+                  style={{ flex: 1, minWidth: '200px' }}
+                />
+              </div>
+              <div className="filter-group">
+                <label>From:</label>
+                <input
+                  type="date"
+                  value={filters.dateStart}
+                  onChange={(e) => {
+                    setFilters({ ...filters, dateStart: e.target.value });
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+              <div className="filter-group">
+                <label>To:</label>
+                <input
+                  type="date"
+                  value={filters.dateEnd}
+                  onChange={(e) => {
+                    setFilters({ ...filters, dateEnd: e.target.value });
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Audit Log */}
+            {loading ? (
+              <div className="loading-container">
+                <div className="spinner"></div>
+              </div>
+            ) : (
+              <>
+                {filteredLogs.length === 0 ? (
+                  <div className="empty-state">
+                    <div className="empty-state-icon">📭</div>
+                    <div className="empty-state-text">No audit entries found matching your filters.</div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="audit-container">
+                      {paginatedLogs.map(log => (
+                        <div key={log.id} className="audit-entry">
+                          <div className="audit-timestamp">{formatTimestamp(log.timestamp)}</div>
+                          <div className="audit-content">
+                            <div className="audit-header">
+                              <span className={`audit-badge badge-${log.tool}`}>
+                                {log.tool}
+                              </span>
+                              <span className={`audit-action ${log.action}`}>
+                                {log.action}
+                              </span>
+                            </div>
+                            <div className="audit-details">{log.details}</div>
+                            {(log.itemName || log.category) && (
+                              <div className="audit-meta">
+                                {log.itemName && <span>Item: {log.itemName}</span>}
+                                {log.itemName && log.category && <span> | </span>}
+                                {log.category && <span>Category: {log.category}</span>}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Pagination */}
+                    <div className="pagination">
+                      <button
+                        onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        ← Previous
+                      </button>
+                      <div className="pagination-info">
+                        Page {currentPage} of {totalPages || 1} ({filteredLogs.length} entries)
+                      </div>
+                      <button
+                        onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                        disabled={currentPage >= totalPages || totalPages === 0}
+                      >
+                        Next →
+                      </button>
+                    </div>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </>
+      );
+    }
+
+    // Render app
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<AuditTrail />);
+  </script>
+</body>
+</html>

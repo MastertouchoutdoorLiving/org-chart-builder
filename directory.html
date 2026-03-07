@@ -7,6 +7,7 @@
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root[data-theme="dark"] {
             --bg-primary: #0C2637;
@@ -671,6 +672,48 @@
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
 
+        // Supabase client
+        const SUPABASE_URL = 'https://jpieratyhqxkwbjzcjqk.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpwaWVyYXR5aHF4a3dianpjanFrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4NDY3NzIsImV4cCI6MjA4ODQyMjc3Mn0.Dr0IDpWxWy8hHIKwlckDWvFNx6gmzQghhbqQgy4jRiI';
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // System audit logging function
+        async function logSystemAudit(tool, action, details, itemName, category) {
+            try {
+                let log = [];
+                try {
+                    const { data } = await supabase.storage
+                        .from('company-documents')
+                        .download('_audit/system-audit-log.json');
+                    if (data) {
+                        const text = await data.text();
+                        log = JSON.parse(text);
+                    }
+                } catch (e) { log = []; }
+
+                const entry = {
+                    id: Date.now().toString(36) + Math.random().toString(36).substr(2),
+                    tool,
+                    action,
+                    details,
+                    itemName: itemName || null,
+                    category: category || null,
+                    timestamp: new Date().toISOString(),
+                    user: 'System'
+                };
+
+                log.unshift(entry);
+                log = log.slice(0, 1000); // Keep last 1000 entries
+
+                const blob = new Blob([JSON.stringify(log, null, 2)], { type: 'application/json' });
+                await supabase.storage
+                    .from('company-documents')
+                    .upload('_audit/system-audit-log.json', blob, { upsert: true });
+            } catch (err) {
+                console.error('System audit log error:', err);
+            }
+        }
+
         // Department colors
         const DEPARTMENT_COLORS = {
             'Management': '#F47920',
@@ -835,8 +878,10 @@
                     const updated = [...employees];
                     updated[existingIndex] = updatedEmployee;
                     setEmployees(updated);
+                    logSystemAudit('directory', 'edit', `Updated employee '${updatedEmployee.fullName}'`, updatedEmployee.fullName, updatedEmployee.department);
                 } else {
                     setEmployees([...employees, updatedEmployee]);
+                    logSystemAudit('directory', 'add', `Added new employee '${updatedEmployee.fullName}'`, updatedEmployee.fullName, updatedEmployee.department);
                 }
                 setShowModal(false);
                 setSelectedEmployee(null);
@@ -848,6 +893,7 @@
             }
 
             function handleConfirmDelete() {
+                logSystemAudit('directory', 'delete', `Deleted employee '${employeeToDelete.fullName}'`, employeeToDelete.fullName, employeeToDelete.department);
                 setEmployees(employees.filter(e => e.id !== employeeToDelete.id));
                 setShowModal(false);
                 setShowConfirmation(false);
@@ -864,6 +910,7 @@
                 link.download = `mt-employees-${new Date().toISOString().split('T')[0]}.json`;
                 link.click();
                 URL.revokeObjectURL(url);
+                logSystemAudit('directory', 'export', `Exported ${employees.length} employee records`, null, null);
             }
 
             function handleImport(e) {
@@ -876,6 +923,7 @@
                         const imported = JSON.parse(event.target.result);
                         if (Array.isArray(imported)) {
                             setEmployees(imported);
+                            logSystemAudit('directory', 'import', `Imported ${imported.length} employee records from ${file.name}`, null, null);
                             alert('Employees imported successfully!');
                         } else {
                             alert('Invalid file format. Please ensure it contains an array of employees.');
@@ -909,6 +957,7 @@
                             <button className="btn-primary" onClick={handleAddEmployee}>
                                 + Add Employee
                             </button>
+                            <a href="audit.html" className="back-link">Audit Log</a>
                             <a href="index.html" className="back-link">Back to Hub</a>
                         </div>
                     </div>
